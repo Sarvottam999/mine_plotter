@@ -12,6 +12,7 @@ import 'package:myapp/presentantion/providers/drawing_provider.dart';
 import 'package:myapp/presentantion/widgets/ShowMyLocationButton.dart';
 import 'package:myapp/presentantion/widgets/coordinate_popup.dart';
 import 'package:myapp/presentantion/widgets/drawing_button.dart';
+import 'package:myapp/presentantion/widgets/floating_toolbar.dart';
 import 'package:myapp/presentantion/widgets/map_layers.dart';
 import 'package:myapp/presentantion/widgets/search_location.dart';
 import 'package:myapp/presentantion/widgets/shape_details_panel.dart';
@@ -203,6 +204,12 @@ class _MapScreenState extends State<MapScreen> {
                 alignment: Alignment.center,
                 child: const ShapeEditor(),
               ),
+                // Positioned(
+                //   top: 0,
+                //   left: 80,
+                //   bottom: 0,
+                //   child: Center(child: const FloatingToolbar()),
+                // ),
           
             
             ],

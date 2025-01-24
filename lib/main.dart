@@ -72,12 +72,7 @@ class DrawingScreen extends StatelessWidget {
           undoButtons(),
           FishboneTypeSelector(),
 
-          // Positioned(
-          //         top: 0,
-          //         left: 80,
-          //         bottom: 0,
-          //         child: Center(child: const FloatingToolbar()),
-          //       ),
+        
         ],
       ),
     );

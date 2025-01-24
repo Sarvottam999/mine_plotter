@@ -11,8 +11,12 @@
 //   Widget build(BuildContext context) {
 //     return Consumer<DrawingProvider>(
 //       builder: (context, provider, _) {
-//         if (!provider.isSelectionMode || provider.selectedShape == null) {
-//           return const SizedBox.shrink();
+//         if (!provider.isEditMode && provider.selectedShape == null) {
+//           return   Container(
+//             height: 100,
+//             width: 100,
+//             color: Colors.red,
+//           );
 //         }
 
 //         return Card(

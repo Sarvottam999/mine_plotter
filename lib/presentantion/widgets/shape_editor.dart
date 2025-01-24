@@ -92,7 +92,7 @@ void initState() {
             DragMarkers(markers: _polyEditor.edit(),),
             Positioned(
                left: 0,
-                  top: 10,
+                  top: 80,
                   right: 0,
               child: Center(
                 child: Container(
