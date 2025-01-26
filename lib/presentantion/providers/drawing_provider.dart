@@ -5,6 +5,7 @@ import 'package:myapp/core/enum/shape_type.dart';
 import 'package:myapp/domain/entities/circle_shape.dart';
 import 'package:myapp/domain/entities/fishbone_shape.dart';
 import 'package:myapp/domain/entities/line_shape.dart';
+import 'package:myapp/domain/entities/marker_point.dart';
 import 'package:myapp/domain/entities/shape.dart';
 import 'package:myapp/domain/entities/square_shape.dart';
 
@@ -27,6 +28,49 @@ class DrawingProvider with ChangeNotifier {
   bool _isEditing = false;
     bool get isEditing => _isEditing;
       Shape? get selectedShape => _selectedShape;
+
+//----------------------  pointer
+       List<MarkerPoint> _markers = [];
+  bool _isAddingMarker = false;
+
+ // Add getters
+  List<MarkerPoint> get markers => _markers;
+  bool get isAddingMarker => _isAddingMarker;
+void toggleMarkerMode() {
+    _isAddingMarker = !_isAddingMarker;
+    if (_isAddingMarker) {
+      _currentShape = ShapeType.none;
+    }
+    notifyListeners();
+  }
+   void addMarker(LatLng position) {
+    if (!_isAddingMarker) return;
+    
+    _markers.add(MarkerPoint(
+      position: position,
+      name: 'Marker ${_markers.length + 1}',
+    ));
+    _isAddingMarker = false;
+    _currentShape= ShapeType.none;
+    notifyListeners();
+  }
+    void updateMarkerPosition(int index, LatLng newPosition) {
+    if (index < 0 || index >= _markers.length) return;
+    
+    _markers[index] = MarkerPoint(
+      position: newPosition,
+      name: _markers[index].name,
+    );
+    notifyListeners();
+  }
+
+  void removeMarker(int index) {
+    if (index < 0 || index >= _markers.length) return;
+    _markers.removeAt(index);
+    notifyListeners();
+  }
+  
+  // --------------------------------------------
 
 
 
@@ -64,6 +108,8 @@ class DrawingProvider with ChangeNotifier {
       _isEditing = false;
       _selectedShape = null;
     }
+    _isAddingMarker = type == ShapeType.marker;
+
     _currentShape = type;
     _currentPoints = [];
     notifyListeners();
@@ -85,8 +131,8 @@ class DrawingProvider with ChangeNotifier {
         case ShapeType.circle:
           newShape = CircleShape(points: List.from(_currentPoints));
           break;
-        // case ShapeType.fishbone:  // Add this case
-        //   newShape = FishboneShape(points: List.from(_currentPoints));
+        // case ShapeType.marker:  // Add this case
+        //   newShape = MarkerPoint();
         //   break;
         case ShapeType.fishbone:
           newShape = FishboneShape(

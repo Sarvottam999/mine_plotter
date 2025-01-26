@@ -1,5 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_dragmarker/flutter_map_dragmarker.dart';
+import 'package:flutter_map_line_editor/flutter_map_line_editor.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:myapp/core/enum/fishbone_type.dart';
 import 'package:myapp/core/enum/shape_type.dart';
@@ -8,7 +12,9 @@ import 'package:myapp/domain/entities/circle_shape.dart';
 import 'package:myapp/domain/entities/fishbone_shape.dart';
 import 'package:myapp/domain/entities/shape.dart';
 import 'package:myapp/domain/entities/square_shape.dart';
+import 'package:myapp/molecules/Buttons/icon_button.dart';
 import 'package:myapp/presentantion/providers/drawing_provider.dart';
+import 'package:myapp/presentantion/screens/SettingScreen/setting_screen.dart';
 import 'package:myapp/presentantion/widgets/ShowMyLocationButton.dart';
 import 'package:myapp/presentantion/widgets/coordinate_popup.dart';
 import 'package:myapp/presentantion/widgets/drawing_button.dart';
@@ -31,7 +37,10 @@ class _MapScreenState extends State<MapScreen> {
   final MapController _mapController = MapController();
   bool _isMapReady = false;
   bool _isPanelVisible = false;
-  MapLayer currentMapLayer = maplayersData[0] ;
+  MapLayer currentMapLayer = maplayersData[0];
+
+  late PolyEditor _polyEditor;
+  List<LatLng> selectedPoints = [];
 
   void _handleShapeSelection(DrawingProvider provider, LatLng clickPoint) {
     Shape? selectedShape;
@@ -109,142 +118,175 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _polyEditor = PolyEditor(
+      points: selectedPoints,
+      pointIcon: const Icon(Icons.location_on, color: Colors.green),
+      intermediateIcon: const Icon(Icons.lens, color: Colors.blue),
+      intermediateIconSize: const Size(20, 20),
+      pointIconSize: const Size(30, 30),
+      callbackRefresh: (point) => setState(() {
+        selectedPoints = selectedPoints;
+      }),
+    );
+    // _mapController = MapController();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    @override
-    void initState() {
-      super.initState();
-      // _mapController = MapController();
-    }
 
-    return Scaffold( 
+    return Scaffold(
       body: Stack(
         children: [
           FlutterMap(
-            mapController: _mapController,
-            options: MapOptions(
-              onTap: (_, point) {
-                final provider = context.read<DrawingProvider>();
-                if (provider.isSelectionMode) {
-                  _handleShapeSelection(provider, point);
-                } else if (provider.currentShape != ShapeType.none) {
-                  provider.addPoint(point);
-                } else {
-                  print("clicked...");
-                  Positioned(
-                    bottom: 1,
-                    right: 0,
-                    left: 0,
-                    child: Text("####################3"),
+              mapController: _mapController,
+              options: MapOptions(
+                onTap: (_, point) {
+                  final provider = context.read<DrawingProvider>();
+                  if (provider.isAddingMarker) {
+                    provider.addMarker(point);
+                    setState(() {
+                      selectedPoints.add(point);
+                    });
+                  } else if (provider.isSelectionMode) {
+                    _handleShapeSelection(provider, point);
+                  } else if (provider.currentShape != ShapeType.none) {
+                    provider.addPoint(point);
+                  } else {
+                    print("clicked...");
+                    Positioned(
+                      bottom: 1,
+                      right: 0,
+                      left: 0,
+                      child: Text("####################3"),
+                    );
+                  }
+                },
+                // onTap: (_, point) {
+                //   final provider = context.read<DrawingProvider>();
+                //   if (provider.currentShape != ShapeType.none) {
+                //     provider.addPoint(point);
+                //   }
+                // },
+                onPointerHover: (event, point) {
+                  print("event==========>${event}");
 
-                  
-                  );
+                  final provider = context.read<DrawingProvider>();
+                  if (provider.currentShape != ShapeType.none) {
+                    provider.updateCursor(point);
+                  }
 
-                }
-              },
-              // onTap: (_, point) {
-              //   final provider = context.read<DrawingProvider>();
-              //   if (provider.currentShape != ShapeType.none) {
-              //     provider.addPoint(point);
-              //   }
-              // },
-              onPointerHover: (event, point) {
-                print("event==========>${event}");
-
-                final provider = context.read<DrawingProvider>();
-                if (provider.currentShape != ShapeType.none) {
-                  provider.updateCursor(point);
-                }
-
-                print("point==========>${point}");
-              },
-              onMapReady: () {
-                print("=============     called   =========");
-                setState(() {
-                  _isMapReady = true;
-                });
-              },
-            ),
-            children: [
-              TileLayer(
-                urlTemplate:currentMapLayer.url,
-                    // 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                subdomains: currentMapLayer.subdomains,
-              ),
-              Consumer<DrawingProvider>(
-                builder: (context, provider, _) {
-                  return PolylineLayer(
-                    polylines: [
-                      ...provider.shapes.expand((shape) {
-                        var polylines = shape.getPolylines();
-                        // Highlight selected shape
-                        if (shape == provider.selectedShape) {
-                          polylines = polylines
-                              .map((polyline) => Polyline(
-                                    points: polyline.points,
-                                    strokeWidth: polyline.strokeWidth + 2,
-                                    color: Colors.yellow,
-                                  ))
-                              .toList();
-                        }
-                        return polylines;
-                      }),
-                      if (provider.currentPoints.isNotEmpty)
-                        Polyline(
-                          points: provider.currentPoints,
-                          strokeWidth: 2.0,
-                          color: Colors.red,
-                        ),
-                    ],
-                  );
+                  print("point==========>${point}");
+                },
+                onMapReady: () {
+                  print("=============     called   =========");
+                  setState(() {
+                    _isMapReady = true;
+                  });
                 },
               ),
-             
-             Align(
-                alignment: Alignment.center,
-                child: const ShapeEditor(),
-              ),
-                // Positioned(
-                //   top: 0,
-                //   left: 80,
-                //   bottom: 0,
-                //   child: Center(child: const FloatingToolbar()),
-                // ),
-          
-            
-            ],
-          ),
-
-           
-
-           if (_isPanelVisible && _isMapReady) // Add condition here
-                Positioned(
-                  right: 10,
-                  top: screenSize.height * 0.1,
-
-                  bottom: screenSize.height * 0.2,
-                  child: AnimatedSize(
-                    duration: const Duration(milliseconds: 300),
-                    child: ShapeDetailsPanel(
-                      mapController: _mapController,
-                      onPressed: () {
-                        setState(() {
-                          _isPanelVisible = !_isPanelVisible;
-                        });
-                      },
-                    ),
-                  ),
+              children: [
+                TileLayer(
+                  urlTemplate: currentMapLayer.url,
+                  // 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  subdomains: currentMapLayer.subdomains,
+                ),
+                Consumer<DrawingProvider>(
+                  builder: (context, provider, _) {
+                    return PolylineLayer(
+                      polylines: [
+                        ...provider.shapes.expand((shape) {
+                          var polylines = shape.getPolylines();
+                          // Highlight selected shape
+                          if (shape == provider.selectedShape) {
+                            polylines = polylines
+                                .map((polyline) => Polyline(
+                                      points: polyline.points,
+                                      strokeWidth: polyline.strokeWidth + 2,
+                                      color: Colors.yellow,
+                                    ))
+                                .toList();
+                          }
+                          return polylines;
+                        }),
+                        if (provider.currentPoints.isNotEmpty)
+                          Polyline(
+                            points: provider.currentPoints,
+                            strokeWidth: 2.0,
+                            color: Colors.red,
+                          ),
+                      ],
+                    );
+                  },
                 ),
 
-      //      Positioned(
-      // left: 20,
-      // bottom: 130,
-      //       child: LocationButton(
-      //             mapController: _mapController,
-      //             zoom: 15.0,
-      //           ),
-      //     ),
-            
+                Align(
+                  alignment: Alignment.center,
+                  child: const ShapeEditor(),
+                ),
+                // Align(
+                //   alignment: Alignment.center,
+                //     child: GestureDetector(
+                //     onTap: () {},
+                //     child: Positioned(
+                //       top: 80,
+                //       left: 80,
+                //       bottom: 0,
+                //       child: Center(child: Icon(Icons.settings)),
+                //     ),
+                // )),
+                Positioned(
+                  top: 10,
+                  right: 60,
+                    child:NIconButton(
+                      icon: Icon(Icons.settings),
+                      onPressed: (){
+                        Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => 
+                      SettingsPage()),
+                  );
+
+
+
+                      }
+                    )
+                     ),
+
+
+                DragMarkers(markers: _polyEditor.edit()),
+
+                
+              ]),
+
+          if (_isPanelVisible && _isMapReady) // Add condition here
+            Positioned(
+              right: 10,
+              top: screenSize.height * 0.1,
+              bottom: screenSize.height * 0.2,
+              child: AnimatedSize(
+                duration: const Duration(milliseconds: 300),
+                child: ShapeDetailsPanel(
+                  mapController: _mapController,
+                  onPressed: () {
+                    setState(() {
+                      _isPanelVisible = !_isPanelVisible;
+                    });
+                  },
+                ),
+              ),
+            ),
+
+          //      Positioned(
+          // left: 20,
+          // bottom: 130,
+          //       child: LocationButton(
+          //             mapController: _mapController,
+          //             zoom: 15.0,
+          //           ),
+          //     ),
 
           if (_isMapReady && !_isPanelVisible)
             Positioned(
@@ -260,10 +302,7 @@ class _MapScreenState extends State<MapScreen> {
                   color: Colors.white, // Set the grey color
                 ),
                 child: IconButton(
-                  icon: 
-                  
-                    SvgPicture.asset('assets/menu.svg'),
-
+                  icon: SvgPicture.asset('assets/menu.svg'),
                   onPressed: () {
                     setState(() {
                       _isPanelVisible = !_isPanelVisible;
@@ -273,59 +312,52 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ),
 
-            Positioned(
+          Positioned(
               bottom: 10,
               right: 10,
-
-              
-              child: LayerSelector(
-              onLayerChanged: (value){
+              child: LayerSelector(onLayerChanged: (value) {
                 setState(() {
                   currentMapLayer = value;
-                  
                 });
+              })),
 
+          Positioned(
+              top: MediaQuery.of(context).padding.top, // Account for status bar
+              left: 0,
+              right: 0,
+              child: LocationSearchBar(
+                locationDB: LocationDatabase(),
+                onLocationSelected: (LatLng location) {
+                  // Handle selected location
+                  print(
+                      'Selected: ${location.latitude}, ${location.longitude}');
+                },
+              ))
 
-              }
-            )),
+          //    LocationSearchBar(
+          //     onLocationSelected: (LatLng location) {
+          //       // Handle location selection
+          //       // e.g., move map, add marker, etc.
+          //       _mapController.move(location, 15);
+          //       setState(() {
+          //         // markers = [
+          //         //   Marker(
+          //         //     point: location,
+          //         //     builder: (ctx) => Icon(Icons.location_pin),
+          //         //   ),
+          //         // ];
+          //       });
+          //     },
+          //     showCurrentLocation: true, // Optional, defaults to true
+          //   ),
+          // ),
 
-            Positioned(
-      top: MediaQuery.of(context).padding.top, // Account for status bar
-      left: 0,
-      right: 0,
-      child:LocationSearchBar(
-  locationDB: LocationDatabase(),
-  onLocationSelected: (LatLng location) {
-    // Handle selected location
-    print('Selected: ${location.latitude}, ${location.longitude}');
-  },
-)
-            )
-
-    //    LocationSearchBar(
-    //     onLocationSelected: (LatLng location) {
-    //       // Handle location selection
-    //       // e.g., move map, add marker, etc.
-    //       _mapController.move(location, 15);
-    //       setState(() {
-    //         // markers = [
-    //         //   Marker(
-    //         //     point: location,
-    //         //     builder: (ctx) => Icon(Icons.location_pin),
-    //         //   ),
-    //         // ];
-    //       });
-    //     },
-    //     showCurrentLocation: true, // Optional, defaults to true
-    //   ),
-    // ),
-
-            // CoordinatePopup(
-            //   address: '',
-            //                         coordinate: LatLng(20.0121, 21.12251),
-            //                         onCancel: () {
-            //                  },
-            //         ),
+          // CoordinatePopup(
+          //   address: '',
+          //                         coordinate: LatLng(20.0121, 21.12251),
+          //                         onCancel: () {
+          //                  },
+          //         ),
 
           // Consumer<DrawingProvider>(
           //   builder: (context, provider, _) {
@@ -355,5 +387,3 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 }
-
-

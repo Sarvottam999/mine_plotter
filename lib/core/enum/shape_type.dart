@@ -6,4 +6,6 @@ enum ShapeType {
   circle, 
   fishbone,
   none,
+  marker,
+
 }

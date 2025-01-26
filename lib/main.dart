@@ -4,6 +4,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:myapp/core/enum/fishbone_type.dart';
 import 'package:myapp/core/enum/shape_type.dart';
 import 'package:myapp/database/location_database.dart';
+import 'package:myapp/presentantion/providers/dowanload_provider.dart';
 import 'package:myapp/presentantion/providers/drawing_provider.dart';
 import 'package:myapp/presentantion/screens/map_screen.dart';
 import 'package:myapp/presentantion/widgets/build_fishbone_type_selector.dart';
@@ -11,49 +12,132 @@ import 'package:myapp/presentantion/widgets/drawing_button.dart';
 import 'package:myapp/presentantion/widgets/floating_toolbar.dart';
 import 'package:myapp/presentantion/widgets/selection_button.dart';
 import 'package:myapp/presentantion/widgets/shape_details_panel.dart';
+import 'package:myapp/searvices/Storage_permission_component.dart';
 import 'package:myapp/services/location_service.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
+// void main() {
+//   WidgetsFlutterBinding.ensureInitialized();
+
+//   runApp(  SafeArea(child: DrawingApp()));
+// }
+ 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
-  runApp(  DrawingApp());
-}
-
-class DrawingApp extends StatelessWidget {
-    final LocationDatabase locationDB = LocationDatabase();
-  late final LocationService locationService;
-
-  DrawingApp() {
-    locationService = LocationService(locationDB);
-    _initializeLocations();
-  }
-
-  Future<void> _initializeLocations() async {
-    if (await locationService.isFirstLaunch()) {
-      if (await locationService.hasInternetConnection()) {
-        await locationService.downloadAndSaveLocations();
-      }
-    }
-  }
-  // const DrawingApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => DrawingProvider()),
-      ],
-      child: SafeArea(
-        child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Map Drawing App',
-          theme: ThemeData(primarySwatch: Colors.blue),
-          home: DrawingScreen(),
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: SafeArea(
+        child: Scaffold(
+          body: DrawingApp(),
         ),
       ),
+    )
+    // MaterialApp(home: Scaffold(body: PermissionChecker())),
+  );
+}
+
+class PermissionChecker extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _checkStoragePermission(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // While checking permission, show a loading spinner
+          return Center(child: CircularProgressIndicator());
+        }
+
+        // if (snapshot.hasData && snapshot.data == PermissionStatus.granted) {
+          // If permission is granted, load the main app
+          return DrawingApp();
+        // } else {
+        //   // If permission is not granted, show the storage permission component
+        //   return StoragePermissionComponent();
+        // }
+      },
     );
+  }
+
+  // Function to check the permission
+  Future<PermissionStatus> _checkStoragePermission() async {
+    return await Permission.storage.status;
+  }
+}
+
+
+
+// ====================================================================================
+
+class DrawingApp extends StatelessWidget {
+  //   final LocationDatabase locationDB = LocationDatabase();
+  // late final LocationService locationService;
+
+  // DrawingApp() {
+  //   locationService = LocationService(locationDB);
+  //   _initializeLocations();
+  // }
+
+  // Future<void> _initializeLocations() async {
+  //   if (await locationService.isFirstLaunch()) {
+  //     if (await locationService.hasInternetConnection()) {
+  //       await locationService.downloadAndSaveLocations();
+  //     }
+  //   }
+  // }
+  // const DrawingApp({super.key});
+    @override
+  Widget build(BuildContext context) {
+    return ScreenUtilInit(
+      designSize: const Size(360, 690),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) {
+        return MultiProvider(
+
+          providers: [
+        ChangeNotifierProvider(create: (_) => DrawingProvider()),
+        ChangeNotifierProvider(
+      create: (_) => MapProvider(),
+    ),
+
+      ],
+          //   builder: (context, child) {
+
+          // return MaterialApp(
+          //     debugShowCheckedModeBanner: false,
+          //     title: 'My App',
+          //     theme: ThemeData(
+          //       primarySwatch: Colors.blue,
+          //     ),
+          //     home: DrawingScreen(),
+          //   );
+          //   }
+           child: MaterialApp(home: DrawingScreen())
+        );
+      },
+      // child: DrawingScreen(), // Replace with your initial screen
+    );
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   return MultiProvider(
+  //     providers: [
+  //       ChangeNotifierProvider(create: (_) => DrawingProvider()),
+  //     ],
+  //     child: SafeArea(
+  //       child: MaterialApp(
+  //         debugShowCheckedModeBanner: false,
+  //         title: 'Map Drawing App',
+  //         theme: ThemeData(primarySwatch: Colors.blue),
+  //         home: DrawingScreen(),
+  //       ),
+  //     ),
+  //   );
   }
 }
 
@@ -147,6 +231,13 @@ class DrawingScreen extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 DrawingButton(
+                    icon: Icons.place,
+                    label: 'Add Marker',
+                    shapeType: ShapeType.marker,
+
+                    // selected: provider.isAddingMarker,
+                  ),
+                DrawingButton(
                   icon: Icons.square_outlined,
                   label: 'Square',
                   shapeType: ShapeType.square,
@@ -224,7 +315,9 @@ class DrawingScreen extends StatelessWidget {
                 builder: (context, provider, _) => Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+
                     IconButton(
+
                       icon: const Icon(
                         Icons.undo,
                         size: 18,
@@ -242,180 +335,6 @@ class DrawingScreen extends StatelessWidget {
     );
   }
 
-  // Widget _buildFishboneTypeSelector(BuildContext context) {
-
-
-  //   final screenSize = MediaQuery.of(context).size;
-
-  //   return Positioned(
-  //     bottom: 0,
-  //     left: 60,
-  //     // right: 0,
-  //     top: 0,
-
-  //     child: Consumer<DrawingProvider>(
-  //       builder: (context, provider, _) {
-  //         if (provider.currentShape != ShapeType.fishbone) return SizedBox();
-
-  //         return Center(
-  //           child: Container(
-  //             padding: EdgeInsets.symmetric(horizontal: 10,  vertical: 8 ),
-  //             decoration: BoxDecoration(
-  //             color: Colors.white,
-  //             borderRadius: BorderRadius.circular(10),
-              
-
-  //             ),
-  //             // width: screenSize.width * 0.4,
-
-  //             // elevation: 4,
-  //             margin: const EdgeInsets.symmetric(horizontal: 16),
-  //             child: Padding(
-  //               padding: const EdgeInsets.symmetric(vertical: 8),
-  //               child: IntrinsicHeight(
-  //                 // This helps the card take minimum required width
-  //                 child: Column(
-  //                   mainAxisSize:
-  //                       MainAxisSize.min, // This makes column wrap to content
-  //                   children: [
-  //                     const Padding(
-  //                       padding: EdgeInsets.only(top: 0, bottom: 5),
-  //                       child: Text(
-  //                         'Fishbone Type:',
-  //                         style: TextStyle(
-  //                           fontWeight: FontWeight.bold,
-  //                           fontSize: 16,
-  //                         ),
-  //                       ),
-  //                     ),
-  //                     IntrinsicWidth(
-  //                       // Add a fixed width to ensure consistent sizing
-  //                       // width: 500,  // or a specific width
-  //                       child: Row(
-  //                         mainAxisSize: MainAxisSize.min,
-  //                         mainAxisAlignment: MainAxisAlignment
-  //                             .spaceEvenly, // Distributes space evenly
-  //                         children: [
-  //                           ...FishboneType.values.map(
-  //                             (type) => Expanded(
-  //                               // Use Expanded instead of Flexible
-  //                               child: Padding(
-  //                                 padding: const EdgeInsets.symmetric(
-  //                                     horizontal: 4), // Add some spacing
-  //                                 child: DottedBorder(
-  //                                   borderType: BorderType.RRect,
-  //                                   radius: const Radius.circular(12),
-  //                                   child: Container(
-  //                                     // Add Container for consistent sizing
-  //                                     height: 100, // Fixed height for all cells
-  //                                     constraints: const BoxConstraints(
-  //                                       minWidth:
-  //                                           100, // Minimum width for each cell
-  //                                     ),
-  //                                     child: Column(
-  //                                       mainAxisAlignment: MainAxisAlignment
-  //                                           .center, // Center content vertically
-  //                                       children: [
-  //                                         Text(
-  //                                           type.name,
-  //                                           textAlign:
-  //                                               TextAlign.center, // Center text
-  //                                           style: const TextStyle(
-  //                                             fontSize:
-  //                                                 14, // Consistent font size
-  //                                           ),
-  //                                         ),
-  //                                         SizedBox(
-  //                                           height: 2,
-  //                                         ),
-  //                                         Image.asset(
-  //                                           "assets/images/1.png",
-  //                                           height: 15,
-  //                                           width: 30,
-  //                                         ),
-  //                                         Radio(
-  //                                           fillColor: WidgetStateProperty.all(Colors.black),
-  //                                           value: type,
-  //                                           groupValue:
-  //                                               provider.currentFishboneType,
-  //                                          onChanged: (FishboneType? value) {
-  //                                     if (value != null) {
-  //                                       provider.setFishboneType(value);
-  //                                     }
-  //                                   },
-  //                                           focusNode: FocusNode(),
-  //                                           autofocus: true,
-  //                                         ),
-  //                                       ],
-  //                                     ),
-  //                                   ),
-  //                                 ),
-  //                               ),
-  //                             ),
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     )
-  //                     // IntrinsicWidth(
-  //                     //   child: Row(
-  //                     //     spacing: 5,
-  //                     //     mainAxisSize: MainAxisSize.min,
-  //                     //     children: [
-  //                     //       ...FishboneType.values.map(
-  //                     //         (type) => Flexible(
-  //                     //             child: DottedBorder(
-  //                     //                           borderType: BorderType.RRect,
-  //                     //                           radius: Radius.circular(12),
-  //                     //           child: Column(
-  //                     //             children: [
-  //                     //               Text(type.name),
-  //                     //               Radio(
-  //                     //                 value: type,
-  //                     //                 groupValue: provider.currentFishboneType,
-  //                     //                 onChanged: (value) {
-  //                     //                   // setState(() {
-  //                     //                   //   selectedOption = value;
-  //                     //                   // });
-  //                     //                 },
-
-  //                     //                 // semanticLabel: 'Option 1',
-  //                     //                 focusNode: FocusNode(),
-  //                     //                 autofocus:
-  //                     //                     true, // Autofocus is optional, depending on the app's needs.
-  //                     //               ),
-  //                     //             ],
-  //                     //           ),
-  //                     //         )
-
-  //                     //             // RadioListTile<FishboneType>(
-  //                     //             //   dense: true,  // Makes the RadioListTile more compact
-  //                     //             //   // title: Text(type.name),
-  //                     //             //   value: type,
-  //                     //             //   groupValue: provider.currentFishboneType,
-  //                     //             //   onChanged: (FishboneType? value) {
-  //                     //             //     if (value != null) {
-  //                     //             //       provider.setFishboneType(value);
-  //                     //             //     }
-  //                     //             //   },
-  //                     //             // ),
-
-  //                     //             ),
-  //                     //       ),
-  //                     //     ],
-  //                     //   ),
-  //                     // )
-  //                   ],
-  //                 ),
-  //               ),
-  //             ),
-  //           ),
-  //         );
-  //       },
-  //     ),
-  //   );
-  // }
-
-
-
 
 }
+ 
