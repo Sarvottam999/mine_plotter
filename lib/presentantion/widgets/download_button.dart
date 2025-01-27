@@ -7,6 +7,7 @@ class NDownloadButton extends StatefulWidget {
   final double height;
   final Color primaryColor;
   final Color secondaryColor;
+  final bool hideShadowa;
 
   const NDownloadButton({
     Key? key,
@@ -16,6 +17,7 @@ class NDownloadButton extends StatefulWidget {
     this.height = 50,
     this.primaryColor = Colors.blue,
     this.secondaryColor = Colors.white,
+    this.hideShadowa = false,
   }) : super(key: key);
 
   @override
@@ -37,13 +39,16 @@ class _NDownloadButtonState extends State<NDownloadButton> {
         decoration: BoxDecoration(
           color: widget.primaryColor,
           borderRadius: BorderRadius.circular(5),
-          boxShadow: [
-            BoxShadow(
-              color: widget.primaryColor.withOpacity(0.4),
-              blurRadius: 10,
-              offset: const Offset(0, 5),
-            ),
-          ],
+
+          boxShadow: widget.hideShadowa == false
+          ? [
+              BoxShadow(
+                color: widget.primaryColor.withOpacity(0.4),
+                blurRadius: 10,
+                offset: const Offset(0, 5),
+              ),
+            ]
+          : [],
         ),
         child: Stack(
           alignment: Alignment.center,

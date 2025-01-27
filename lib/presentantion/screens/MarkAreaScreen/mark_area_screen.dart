@@ -47,6 +47,7 @@ class MapSelectorScreen extends StatelessWidget {
 
               final bounds = LatLngBounds.fromPoints(provider.selectedPoints);
               final map = DownloadedMap(
+                id: DateTime.now().millisecondsSinceEpoch.toString(),
                 name: mapName,
                 northEast: bounds.northEast,
                 southWest: bounds.southWest,
@@ -93,7 +94,32 @@ class MapSelectorScreen extends StatelessWidget {
                 onPressed: () => Navigator.pop(context),
               ),
             ),
-            sideBaar(context)
+            sideBaar(context),
+            
+                           Positioned(
+  top: 10,
+  right: 10,
+  child: Consumer<MapProvider>(
+    builder: (context, provider, child) => Container(
+      padding: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 4.0,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Text(
+        'Zoom: ${provider.currentZoomLevel.toStringAsFixed(1)}',
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ),
+    ),
+  ),
+),
             // Container(
           ],
         ),
@@ -104,60 +130,64 @@ class MapSelectorScreen extends StatelessWidget {
   Positioned sideBaar(BuildContext context) {
     return Positioned(
         top: 0,
-        left: 20,
+        left: 10,
         bottom: 0,
         child: Center(
-            child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      spreadRadius: 1,
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 2, vertical: 5),
-                    child: Consumer<MapProvider>(
-                        builder: (context, provider, child) =>
-                            provider.selectedPoints.length >= 3
-                                ? Column(
-                                    spacing: 4,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      NIconButton(
-                                        icon: Icon(Icons.download),
-                                        onPressed: () =>
-                                            _showDownloadDialog(context),
-                                      ),
-                                     NIconButton(
-                                        icon: Icon(Icons.undo),
-                                        onPressed: () => provider.removeLastPoint(),
-                                      ),
+          child: Consumer<MapProvider>(
+              builder: (context, provider, child) =>
+                  provider.selectedPoints.length >= 3
+                      ? Container(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                spreadRadius: 1,
+                                blurRadius: 10,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 2, vertical: 5),
+                            child: Column(
+                              spacing: 4,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                NIconButton(
+                                  icon: Icon(Icons.download),
+                                  onPressed: () => _showDownloadDialog(context),
+                                ),
+                                NIconButton(
+                                  icon: Icon(Icons.undo),
+                                  onPressed: () => provider.removeLastPoint(),
+                                ),
+          
+                                NIconButton(
+                                  icon: Icon(Icons.delete),
+                                  onPressed: () => provider.clearPoints(),
+                                ),
+          
+                                //  Consumer<MapProvider>(
+                                //     builder: (context, provider, child) => provider.selectedPoints.length >= 3
+                                //         ? NIconButton(
+                                //              icon: Icon(Icons.download),
+                                //             onPressed: () => _showDownloadDialog(context),
+                                //           )
+                                //         : SizedBox(),
+                                //   )
+                 
 
-                                      NIconButton(
-                                        icon: Icon(Icons.delete),
-                                        onPressed: () => provider.clearPoints(),
-                                      ),
-                                     
-
-                                      //  Consumer<MapProvider>(
-                                      //     builder: (context, provider, child) => provider.selectedPoints.length >= 3
-                                      //         ? NIconButton(
-                                      //              icon: Icon(Icons.download),
-                                      //             onPressed: () => _showDownloadDialog(context),
-                                      //           )
-                                      //         : SizedBox(),
-                                      //   )
-                                    ],
-                                  )
-                                : SizedBox())))));
+                              ],
+                            ),
+                          ),
+                        )
+                      : SizedBox()),
+        ));
   }
 }
 
@@ -199,14 +229,21 @@ Widget _buildZoomSlider() {
 }
 
 class MapSelector extends StatelessWidget {
+    final MapController _mapController = MapController();
+
   @override
   Widget build(BuildContext context) {
+        final provider = Provider.of<MapProvider>(context, listen: false);
+
     return Consumer<MapProvider>(
       builder: (context, provider, child) => FlutterMap(
         options: MapOptions(
           initialCenter: LatLng(51.5, -0.09),
           initialZoom: 13.0,
           onTap: provider.addPoint,
+           onMapEvent: (event) {
+             provider.setZoomLevel(event.camera.zoom); 
+        },
         ),
         children: [
           TileLayer(

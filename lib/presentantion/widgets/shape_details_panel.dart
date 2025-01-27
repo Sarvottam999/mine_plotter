@@ -14,12 +14,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class ShapeDetailsPanel extends StatelessWidget {
   final MapController mapController;
-  final VoidCallback onPressed;
+  // final VoidCallback onPressed;
 
   const ShapeDetailsPanel({
     Key? key,
     required this.mapController,
-    required this.onPressed,
+    // required this.onPressed,
   }) : super(key: key);
 
   void _focusOnShape(Shape shape) {
@@ -80,29 +80,29 @@ class ShapeDetailsPanel extends StatelessWidget {
                   'Elements',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
-                Container(
-                  height: 35,
-                  width: 35,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.rectangle,
-                    borderRadius: BorderRadius.circular(8.0),
+                // Container(
+                //   height: 35,
+                //   width: 35,
+                //   decoration: BoxDecoration(>
+                //     shape: BoxShape.rectangle,
+                //     borderRadius: BorderRadius.circular(8.0),
 
-                    color: Colors.blueGrey[50], // Set the grey color
-                  ),
-                  child: IconButton(
-                      icon:SvgPicture.asset('assets/menu.svg'),
-
-
+                //     color: Colors.blueGrey[50], // Set the grey color
+                //   ),
+                //   child: IconButton(
+                //       icon:SvgPicture.asset('assets/menu.svg'),
 
 
 
 
-                      //  Icon(
-                      //   Icons.close,
-                      //   size: 18,
-                      // ),
-                      onPressed: onPressed),
-                ),
+
+
+                //       //  Icon(
+                //       //   Icons.close,
+                //       //   size: 18,
+                //       // ),
+                //       onPressed: onPressed),
+                // ),
               ],
             ),
           ),

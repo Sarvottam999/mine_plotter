@@ -17,17 +17,49 @@ class MapProvider extends ChangeNotifier {
   double currentProgress = 0;
   String currentStatus = '';
 
+    double currentZoomLevel = 13.0;
+
+
     List<LatLng> selectedPoints = [];
   late PolyEditor polyEditor;
   RangeValues zoomRange = RangeValues(10, 15);
+  void setZoomLevel(double zoom) {
+    currentZoomLevel = zoom;
+    notifyListeners();
+  }
+
+  // ============== preview screen stae ==============
+  String? previewMapPath;
+
+void setPreviewMap(String? id)  async{
+
+    final directory = await getExternalStorageDirectory();
+    previewMapPath = '${directory!.path}/offline_maps/${id}';
+    
+  notifyListeners();
+}
+
+  // ==========================
+  // DownloadedMap? currentOfflineMap;
+  String? currentTilePath;
 
 
-  // Future<void> loadMaps() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   final mapsJson = prefs.getStringList('downloaded_maps') ?? [];
-  //   downloadedMaps = mapsJson.map((json) => DownloadedMap.fromJson(jsonDecode(json))).toList();
-  //   notifyListeners();
-  // }
+Future<void> loadOfflineMap(DownloadedMap? map) async {
+  print("loading function ==================");
+  if (map == null) {
+    currentTilePath = null;
+  print("loading function ==================2 null");
+
+  } else {
+
+    final directory = await getExternalStorageDirectory();
+    currentTilePath = '${directory!.path}/offline_maps/${map.id}';
+  print("loading function ==================currentTilePath");
+
+  }
+  notifyListeners();
+}
+ 
   Future<void> loadMaps() async {
  final directory = await getExternalStorageDirectory();
  final baseMapDir = Directory('${directory!.path}/offline_maps');
@@ -45,6 +77,7 @@ class MapProvider extends ChangeNotifier {
       print("meta file exits ==================");
        final metadata = jsonDecode(await metadataFile.readAsString());
        maps.add(DownloadedMap(
+        id:metadata['id'] ?? 0 ,
          name: metadata['name'],
          northEast: LatLng(metadata['northEast']['lat'], metadata['northEast']['lng']),
          southWest: LatLng(metadata['southWest']['lat'], metadata['southWest']['lng']),
@@ -65,7 +98,9 @@ class MapProvider extends ChangeNotifier {
 Future<void> deleteMap(int index) async {
  final map = downloadedMaps[index];
  final directory = await getExternalStorageDirectory();
- final mapDir = Directory('${directory!.path}/offline_maps/${map.name}');
+ final mapDir = Directory('${directory!.path}/offline_maps/${map.id}');
+ print("============================");
+ print(map);
  
  await mapDir.delete(recursive: true); // Delete folder and contents
  downloadedMaps.removeAt(index);       // Remove from list
@@ -135,9 +170,11 @@ double calculateArea() {
 
   Future<void> downloadMap(DownloadedMap map, int minZoom, int maxZoom) async {
     isDownloading = true;
-    notifyListeners();
+        // final id = DateTime.now().millisecondsSinceEpoch.toString();
+
 
     final downloader = MapDownloader(
+      id: map.id,
       tileUrl: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       minZoom: minZoom,
       maxZoom: maxZoom,
@@ -163,6 +200,8 @@ double calculateArea() {
       currentStatus = 'Error: $e';
       notifyListeners();
     }
+    notifyListeners();
+
   }
 
   // Future<void> deleteMap(int index) async {

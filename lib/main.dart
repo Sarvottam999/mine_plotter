@@ -6,13 +6,13 @@ import 'package:myapp/core/enum/shape_type.dart';
 import 'package:myapp/database/location_database.dart';
 import 'package:myapp/presentantion/providers/dowanload_provider.dart';
 import 'package:myapp/presentantion/providers/drawing_provider.dart';
-import 'package:myapp/presentantion/screens/map_screen.dart';
+import 'package:myapp/presentantion/screens/map_screen/map_screen.dart';
 import 'package:myapp/presentantion/widgets/build_fishbone_type_selector.dart';
 import 'package:myapp/presentantion/widgets/drawing_button.dart';
 import 'package:myapp/presentantion/widgets/floating_toolbar.dart';
 import 'package:myapp/presentantion/widgets/selection_button.dart';
 import 'package:myapp/presentantion/widgets/shape_details_panel.dart';
-import 'package:myapp/searvices/Storage_permission_component.dart';
+import 'package:myapp/services/Storage_permission_component.dart';
 import 'package:myapp/services/location_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -31,14 +31,16 @@ void main() {
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
+                title: 'Map Drawing App',
+          theme: ThemeData(primarySwatch: Colors.blue),
+
       home: SafeArea(
         child: Scaffold(
           body: DrawingApp(),
         ),
       ),
     )
-    // MaterialApp(home: Scaffold(body: PermissionChecker())),
-  );
+   );
 }
 
 class PermissionChecker extends StatelessWidget {
@@ -117,7 +119,11 @@ class DrawingApp extends StatelessWidget {
           //     home: DrawingScreen(),
           //   );
           //   }
-           child: MaterialApp(home: DrawingScreen())
+           child: MaterialApp(
+            debugShowCheckedModeBanner: false,
+            
+            
+            home: DrawingScreen())
         );
       },
       // child: DrawingScreen(), // Replace with your initial screen

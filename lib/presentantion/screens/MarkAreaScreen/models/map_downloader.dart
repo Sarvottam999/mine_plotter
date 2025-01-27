@@ -21,6 +21,7 @@ class TileBounds {
 }
 
 class MapDownloader {
+  final String id;
   final String tileUrl;
   final int minZoom;
   final int maxZoom;
@@ -29,6 +30,7 @@ class MapDownloader {
   final String mapName;
 
   MapDownloader({
+    required this.id,
     required this.tileUrl,
     required this.minZoom,
     required this.maxZoom,
@@ -38,7 +40,7 @@ class MapDownloader {
   });
 
   Future<void> downloadTiles(Function(double) onProgress) async {
-    final mapDirPath = await StorageHandler.createMapDirectory(mapName);
+    final mapDirPath = await StorageHandler.createMapDirectory(id);
     int totalTiles = 0;
     int downloadedTiles = 0;
 
@@ -100,6 +102,7 @@ class MapDownloader {
     // Save metadata
     final metadataFile = File('$mapDirPath/metadata.json');
     final metadata = {
+      'id' :id,
       'name': mapName,
       'minZoom': minZoom,
       'maxZoom': maxZoom,

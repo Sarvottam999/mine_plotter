@@ -49,6 +49,8 @@ dependencies:
   sqflite: ^2.4.1
   flutter_screenutil: ^5.9.3
   path_provider: ^2.1.5
+  pdf: ^3.11.2
+  screenshot: ^3.0.0
   
 
   

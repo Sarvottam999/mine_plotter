@@ -1,9 +1,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:myapp/presentantion/screens/MarkAreaScreen/mark_area_screen.dart';
 import 'package:myapp/presentantion/screens/SettingScreen/models/setting_tab.dart';
 import 'package:myapp/presentantion/screens/SettingScreen/setting_detail_screen.dart';
 import 'package:myapp/presentantion/screens/SettingScreen/utils.dart';
+import 'package:myapp/presentantion/widgets/download_button.dart';
 
 
 class SettingsPage extends StatefulWidget {
@@ -21,7 +23,10 @@ class _SettingsPageState extends State<SettingsPage> {
     final isTablet = MediaQuery.of(context).size.width > 600;
 
     return Scaffold( 
-      appBar: AppBar(backgroundColor: Colors.white,),
+      appBar: AppBar(backgroundColor: Colors.white, actions: [
+        
+
+      ],),
       body: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -41,13 +46,13 @@ class _SettingsPageState extends State<SettingsPage> {
                         Center(
                           child: Container(
                             alignment: Alignment.center,
-                            height: 200.h,
+                            // height: 200.h,
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                    border: Border(
                                 left: BorderSide(
                                   color: const Color.fromARGB(255, 235, 235, 235), // Border color
-                                  width: 2.0, // Border thickness
+                                  width: 2.0, // BorOder thickness
                                 ),
                                    ),)),
                         ),
@@ -135,7 +140,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _buildSettingsDetails() {
     return Container(
-      padding: EdgeInsets.all(16.w),
+      margin: EdgeInsets.only(top: 5.h),
+      padding: EdgeInsets.symmetric(horizontal: 10.w),
       decoration: BoxDecoration(
         color: Colors.white,
         // borderRadius: BorderRadius.circular(16.r),
