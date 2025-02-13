@@ -2,6 +2,7 @@
 
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_map_dragmarker/src/drag_marker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:myapp/core/enum/fishbone_type.dart';
@@ -252,7 +253,7 @@ class FishboneShape extends Shape {
   }
 
   @override
-  Map<String, dynamic> getDetails() {
+  Map<String, dynamic> getDetails(BuildContext context) {
     if (points.isEmpty) return {'type': fishboneTitle[fishboneType]};
     
     var details = {
@@ -274,5 +275,11 @@ class FishboneShape extends Shape {
     }
 
     return details;
+  }
+
+  @override
+  List<DragMarker> getPoints() {
+    // TODO: implement getPoints
+    throw UnimplementedError();
   }
 }

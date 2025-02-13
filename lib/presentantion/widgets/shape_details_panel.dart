@@ -49,30 +49,28 @@ class ShapeDetailsPanel extends StatelessWidget {
     );
 
     // Animate map to fit bounds
-    mapController.fitCamera( 
-        CameraFit.bounds(
-          bounds: bounds,
-          padding: const EdgeInsets.all(50.0),
-          maxZoom: 18,
-        ),
-        );
+    mapController.fitCamera(
+      CameraFit.bounds(
+        bounds: bounds,
+        padding: const EdgeInsets.all(50.0),
+        maxZoom: 18,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final screen_size = MediaQuery.of(context).size;
     return Container(
+      constraints: BoxConstraints(maxWidth: 300),
       padding: EdgeInsets.symmetric(horizontal: 17),
-
-      width: 300,
+      width: screen_size.width * 0.6,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-        color: Colors.white
-   
-      ),
+          borderRadius: BorderRadius.circular(15), color: Colors.white),
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric( vertical: 13),
+            padding: const EdgeInsets.symmetric(vertical: 13),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -91,12 +89,6 @@ class ShapeDetailsPanel extends StatelessWidget {
                 //   ),
                 //   child: IconButton(
                 //       icon:SvgPicture.asset('assets/menu.svg'),
-
-
-
-
-
-
                 //       //  Icon(
                 //       //   Icons.close,
                 //       //   size: 18,
@@ -110,10 +102,13 @@ class ShapeDetailsPanel extends StatelessWidget {
             child: Consumer<DrawingProvider>(
               builder: (context, provider, _) {
                 if (provider.shapes.isEmpty) {
-                  return   Center(
+                  return Center(
                     child: Padding(
                       padding: EdgeInsets.all(16.0),
-                      child: Image.asset('assets/nothing_found.png', width: double.infinity,),
+                      child: Image.asset(
+                        'assets/nothing_found.png',
+                        width: double.infinity,
+                      ),
                     ),
                   );
                 }
@@ -122,33 +117,33 @@ class ShapeDetailsPanel extends StatelessWidget {
                   itemCount: provider.shapes.length,
                   itemBuilder: (context, index) {
                     final shape = provider.shapes[index];
-                    final details = shape.getDetails();
+                    final details = shape.getDetails(context);
 
                     return Container(
                       margin: EdgeInsets.symmetric(vertical: 8),
-                      decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(12)),
-                      // color: Colors.white,
+                      decoration: BoxDecoration(
+                          color: Colors.grey[100],
+                          borderRadius: BorderRadius.circular(12)),
                       child: InkWell(
                         onTap: () => _focusOnShape(shape),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric( horizontal: 10.0, vertical: 5),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10.0, vertical: 5),
                           child: Column(
-                            // mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   Container(
-                                    padding: EdgeInsets.symmetric (horizontal: 10, vertical:  5),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 5),
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                    color: Colors.red,
-                                  
+                                      color: Colors.red,
                                     ),
                                     child: Icon(
-                                      size: 15, 
+                                      size: 15,
                                       _getShapeIcon(shape),
                                       color: Colors.white,
                                     ),
@@ -156,55 +151,54 @@ class ShapeDetailsPanel extends StatelessWidget {
                                   Expanded(
                                     // flex: 1,
                                     child: Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal:  8.0),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8.0),
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                        'Element ${index + 1}',
-                                        style:   TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.grey[600]
-                                        ),
-                                      ),
-                                      Container(
-                                        // width: 150,
-                                    
-                                        child: Text(
-                                          '${details['type']}',
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 14,
+                                            'Element ${index + 1}',
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey[600]),
                                           ),
-                                        ),
-                                      ),
-                                      
+                                          Container(
+                                            child: Text(
+                                              '${details['type']}',
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
                                   ),
-                                  // Spacer(),
-                                  
-                                   IconButton(
-                                                                   icon: const Icon(Icons.edit, 
-                                      size: 20, 
-                                                                   ),
-                                                                   onPressed: () => provider.selectShape(shape),
-                                                                 ),
-                                  
+
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.edit,
+                                      size: 20,
+                                    ),
+                                    onPressed: () =>
+                                        provider.selectShape(shape),
+                                  ),
                                 ],
                               ),
-                              const Divider(color: Colors.white,),
+                              const Divider(
+                                color: Colors.white,
+                              ),
                               ...details.entries
                                   .where((e) => e.key != 'type')
                                   .map((e) => Padding(
-                                        padding: const EdgeInsets.symmetric( horizontal: 10,
-                                            vertical: 4.0),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10, vertical: 4.0),
                                         child: Text(
                                             '${_formatKey(e.key)}: ${e.value}'),
                                       )),
-                             
                             ],
                           ),
                         ),

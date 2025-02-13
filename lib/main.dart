@@ -1,46 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:myapp/core/enum/fishbone_type.dart';
 import 'package:myapp/core/enum/shape_type.dart';
-import 'package:myapp/database/location_database.dart';
+import 'package:myapp/presentantion/providers/coordinate_provider.dart';
 import 'package:myapp/presentantion/providers/dowanload_provider.dart';
 import 'package:myapp/presentantion/providers/drawing_provider.dart';
+import 'package:myapp/presentantion/screens/Settings/CoordinateSetting/cordinate_setting_screen.dart';
 import 'package:myapp/presentantion/screens/map_screen/map_screen.dart';
 import 'package:myapp/presentantion/widgets/build_fishbone_type_selector.dart';
 import 'package:myapp/presentantion/widgets/drawing_button.dart';
-import 'package:myapp/presentantion/widgets/floating_toolbar.dart';
 import 'package:myapp/presentantion/widgets/selection_button.dart';
-import 'package:myapp/presentantion/widgets/shape_details_panel.dart';
-import 'package:myapp/services/Storage_permission_component.dart';
-import 'package:myapp/services/location_service.dart';
+import 'package:myapp/services/preferences_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
-// void main() {
-//   WidgetsFlutterBinding.ensureInitialized();
-
-//   runApp(  SafeArea(child: DrawingApp()));
-// }
- 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-                title: 'Map Drawing App',
-          theme: ThemeData(primarySwatch: Colors.blue),
-
-      home: SafeArea(
-        child: Scaffold(
-          body: DrawingApp(),
-        ),
+ 
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    title: 'Map Drawing App',
+    theme: ThemeData(primarySwatch: Colors.blue),
+    home: SafeArea(
+      child: Scaffold(
+        body: DrawingApp(),
       ),
-    )
-   );
+    ),
+  ));
 }
 
 class PermissionChecker extends StatelessWidget {
@@ -55,8 +41,8 @@ class PermissionChecker extends StatelessWidget {
         }
 
         // if (snapshot.hasData && snapshot.data == PermissionStatus.granted) {
-          // If permission is granted, load the main app
-          return DrawingApp();
+        // If permission is granted, load the main app
+        return DrawingApp();
         // } else {
         //   // If permission is not granted, show the storage permission component
         //   return StoragePermissionComponent();
@@ -70,8 +56,6 @@ class PermissionChecker extends StatelessWidget {
     return await Permission.storage.status;
   }
 }
-
-
 
 // ====================================================================================
 
@@ -92,58 +76,29 @@ class DrawingApp extends StatelessWidget {
   //   }
   // }
   // const DrawingApp({super.key});
-    @override
+  @override
   Widget build(BuildContext context) {
+  final prefsService = PreferencesService();
+
     return ScreenUtilInit(
       designSize: const Size(360, 690),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
         return MultiProvider(
+            providers: [
+              ChangeNotifierProvider(create: (_) => CoordinateProvider(prefsService)),
+              ChangeNotifierProvider(create: (_) => DrawingProvider()),
+              ChangeNotifierProvider(
+                create: (_) => MapProvider(),
+              ),
 
-          providers: [
-        ChangeNotifierProvider(create: (_) => DrawingProvider()),
-        ChangeNotifierProvider(
-      create: (_) => MapProvider(),
-    ),
-
-      ],
-          //   builder: (context, child) {
-
-          // return MaterialApp(
-          //     debugShowCheckedModeBanner: false,
-          //     title: 'My App',
-          //     theme: ThemeData(
-          //       primarySwatch: Colors.blue,
-          //     ),
-          //     home: DrawingScreen(),
-          //   );
-          //   }
-           child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-            
-            
-            home: DrawingScreen())
-        );
+            ],
+            child: MaterialApp(
+                debugShowCheckedModeBanner: false, home: DrawingScreen()));
       },
       // child: DrawingScreen(), // Replace with your initial screen
     );
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return MultiProvider(
-  //     providers: [
-  //       ChangeNotifierProvider(create: (_) => DrawingProvider()),
-  //     ],
-  //     child: SafeArea(
-  //       child: MaterialApp(
-  //         debugShowCheckedModeBanner: false,
-  //         title: 'Map Drawing App',
-  //         theme: ThemeData(primarySwatch: Colors.blue),
-  //         home: DrawingScreen(),
-  //       ),
-  //     ),
-  //   );
   }
 }
 
@@ -161,8 +116,6 @@ class DrawingScreen extends StatelessWidget {
           bottomBar(),
           undoButtons(),
           FishboneTypeSelector(),
-
-        
         ],
       ),
     );
@@ -179,7 +132,7 @@ class DrawingScreen extends StatelessWidget {
           children: [
             Consumer<DrawingProvider>(
               builder: (context, provider, _) {
-                final details = provider.getCurrentShapeDetails();
+                final details = provider.getCurrentShapeDetails(context);
                 print("details=============>${details}");
                 if (details == null) return const SizedBox();
 
@@ -237,12 +190,12 @@ class DrawingScreen extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 DrawingButton(
-                    icon: Icons.place,
-                    label: 'Add Marker',
-                    shapeType: ShapeType.marker,
+                  icon: Icons.adjust,
+                  label: 'Add Marker',
+                  shapeType: ShapeType.point,
 
-                    // selected: provider.isAddingMarker,
-                  ),
+                  // selected: provider.isAddingMarker,
+                ),
                 DrawingButton(
                   icon: Icons.square_outlined,
                   label: 'Square',
@@ -270,7 +223,6 @@ class DrawingScreen extends StatelessWidget {
                   shapeType: ShapeType.fishbone,
                 ),
 
-                const SelectionButton(), // Add this line
 
                 //  DrawingButton(
                 //   icon: Icons.living,
@@ -321,9 +273,7 @@ class DrawingScreen extends StatelessWidget {
                 builder: (context, provider, _) => Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-
                     IconButton(
-
                       icon: const Icon(
                         Icons.undo,
                         size: 18,
@@ -340,7 +290,4 @@ class DrawingScreen extends StatelessWidget {
       ),
     );
   }
-
-
 }
- 

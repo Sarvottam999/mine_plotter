@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_dragmarker/src/drag_marker.dart';
 import 'package:myapp/core/enum/shape_type.dart';
 import 'package:myapp/domain/entities/shape.dart';
 import 'package:latlong2/latlong.dart';
@@ -41,7 +42,7 @@ class CircleShape extends Shape {
   }
 
   @override
-  Map<String, dynamic> getDetails() {
+  Map<String, dynamic> getDetails(BuildContext context) {
     if (points.isEmpty) return {'type': 'Circle'};
 
     var details = {
@@ -77,6 +78,12 @@ List<Polyline> getPolylines() {
     ),
   ];
 }
+
+  @override
+  List<DragMarker> getPoints() {
+    // TODO: implement getPoints
+    throw UnimplementedError();
+  }
 }
 
 

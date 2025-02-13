@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:myapp/core/enum/shape_type.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -13,6 +14,6 @@ abstract class Shape {
   });
 
   double calculateDistance();
-  Map<String, dynamic> getDetails();
+  Map<String, dynamic> getDetails(BuildContext context);
   List<Polyline> getPolylines(); // Add this method
 }

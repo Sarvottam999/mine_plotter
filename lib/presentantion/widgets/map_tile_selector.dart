@@ -19,18 +19,23 @@ class MapTileSelector extends StatelessWidget {
   
     return Consumer<MapProvider>(
       builder: (context, provider, _) {
+    final screen_size = MediaQuery.of(context).size;
+
         // return Container(
         //   height: 500,
         //   width: 500,
         //   color: Colors.white,
         // );
         return Container(
+          constraints: BoxConstraints(
+        maxWidth: 300
+      ),
             padding: EdgeInsets.symmetric(vertical: 5, horizontal: 17),
-            width: 300,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
                 color: Colors.white),
-            height: 500,
+            height: 5 ,
+                 width: screen_size.width * 0.6,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
         

@@ -1,6 +1,7 @@
 // import 'package:helloworld/core/enums/shape_type.dart';
 // import 'package:helloworld/domain/entities/shape.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map_dragmarker/src/drag_marker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:myapp/core/enum/shape_type.dart';
 import 'package:myapp/domain/entities/shape.dart';
@@ -36,7 +37,7 @@ class SquareShape extends Shape {
   }
 
   @override
-  Map<String, dynamic> getDetails() {
+  Map<String, dynamic> getDetails(BuildContext context) {
     if (points.isEmpty) return {'type': 'Square'};
 
     var details = {
@@ -75,4 +76,10 @@ List<Polyline> getPolylines() {
     ),
   ];
 }
+
+  @override
+  List<DragMarker> getPoints() {
+    // TODO: implement getPoints
+    throw UnimplementedError();
+  }
 }

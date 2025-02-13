@@ -26,15 +26,25 @@ class DrawingProvider with ChangeNotifier {
     Shape? _selectedShape;
 
   bool _isEditing = false;
-    bool get isEditing => _isEditing;
-      Shape? get selectedShape => _selectedShape;
+  bool get isEditing => _isEditing;
+  Shape? get selectedShape => _selectedShape;
 
 //----------------------  pointer
-       List<MarkerPoint> _markers = [];
+  List<LatLng> _markers = [];
   bool _isAddingMarker = false;
+  void updateMarkerPosition1(LatLng newPosition) {
+    _markerPosition = newPosition;
+    notifyListeners();
+  }
+
+  //------------ dragable map pointer ------------
+    LatLng? _markerPosition;
+      LatLng? get markerPosition => _markerPosition;
+
+
 
  // Add getters
-  List<MarkerPoint> get markers => _markers;
+  List<LatLng> get markers => _markers;
   bool get isAddingMarker => _isAddingMarker;
 void toggleMarkerMode() {
     _isAddingMarker = !_isAddingMarker;
@@ -44,12 +54,9 @@ void toggleMarkerMode() {
     notifyListeners();
   }
    void addMarker(LatLng position) {
-    if (!_isAddingMarker) return;
+    _markers.add(position);
+    print((" added marker ======= ${_markers}"));
     
-    _markers.add(MarkerPoint(
-      position: position,
-      name: 'Marker ${_markers.length + 1}',
-    ));
     _isAddingMarker = false;
     _currentShape= ShapeType.none;
     notifyListeners();
@@ -57,10 +64,10 @@ void toggleMarkerMode() {
     void updateMarkerPosition(int index, LatLng newPosition) {
     if (index < 0 || index >= _markers.length) return;
     
-    _markers[index] = MarkerPoint(
-      position: newPosition,
-      name: _markers[index].name,
-    );
+    // _markers[index] = MarkerPoint(
+    //   position: newPosition,
+    //   name: _markers[index].name,
+    // );
     notifyListeners();
   }
 
@@ -179,7 +186,7 @@ void toggleMarkerMode() {
     notifyListeners();
   }
 
-  Map<String, dynamic>? getCurrentShapeDetails() {
+  Map<String, dynamic>? getCurrentShapeDetails(BuildContext context) {
     if (_currentShape == ShapeType.none) return null;
 
     List<LatLng> points = List.from(_currentPoints);
@@ -203,7 +210,7 @@ void toggleMarkerMode() {
         return null;
     }
 
-    Map<String, dynamic> details = tempShape.getDetails();
+    Map<String, dynamic> details = tempShape.getDetails(context);
     if (_currentCursor != null) {
       details['cursor'] =
           '${_currentCursor!.latitude.toStringAsFixed(6)}, ${_currentCursor!.longitude.toStringAsFixed(6)}';
@@ -214,7 +221,10 @@ void toggleMarkerMode() {
 
 
   //  edit delete  =====================   Add these new methods
-  void toggleSelectionMode() {
+  void toggleSelectionMode(LatLng? centerPosition) {
+    if (!isSelectionMode) {
+      _markerPosition = centerPosition;
+    }
     isSelectionMode = !isSelectionMode;
     if (!isSelectionMode) {
       _selectedShape = null;

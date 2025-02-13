@@ -48,13 +48,11 @@ Future<void> loadOfflineMap(DownloadedMap? map) async {
   print("loading function ==================");
   if (map == null) {
     currentTilePath = null;
-  print("loading function ==================2 null");
 
   } else {
 
     final directory = await getExternalStorageDirectory();
     currentTilePath = '${directory!.path}/offline_maps/${map.id}';
-  print("loading function ==================currentTilePath");
 
   }
   notifyListeners();
@@ -65,7 +63,6 @@ Future<void> loadOfflineMap(DownloadedMap? map) async {
  final baseMapDir = Directory('${directory!.path}/offline_maps');
  
  if (!await baseMapDir.exists()) {
-  print('not exits.....================================');
    return;
  }
 

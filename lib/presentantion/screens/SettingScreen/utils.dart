@@ -2,6 +2,7 @@
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:myapp/presentantion/screens/MapListScreen/map_list_screen.dart';
 import 'package:myapp/presentantion/screens/SettingScreen/models/setting_tab.dart';
+import 'package:myapp/presentantion/screens/Settings/CoordinateSetting/cordinate_setting_screen.dart';
 
  
    final List<SettingTab> setting_tabs = [
@@ -17,6 +18,20 @@ import 'package:myapp/presentantion/screens/SettingScreen/models/setting_tab.dar
     //     ),
     //   ),
     // ),
+    SettingTab(
+      id: 'coordinate-setting',
+      name: 'Coordinates Setting',
+      icon: Icons.language,
+      content: SettingsScreen()
+    // )
+      // content: Center(
+      //   child: Text(
+      //     'Select your preferred language for the application.',
+      //     style: TextStyle(fontSize: 16.sp),
+      //     textAlign: TextAlign.center,
+      //   ),
+      // ),
+    ),
      SettingTab(
       id: 'maps',
       name: 'Maps',
@@ -29,25 +44,14 @@ import 'package:myapp/presentantion/screens/SettingScreen/models/setting_tab.dar
       icon: Icons.lock,
       content: Center(
         child: Text(
-          'Adjust your privacy preferences, including data sharing and visibility.',
+          'Adjust your Cordinate setting..',
           style: TextStyle(fontSize: 16.sp),
           textAlign: TextAlign.center,
         ),
       ),
     ),
    
-    // SettingTab(
-    //   id: 'language',
-    //   name: 'Language',
-    //   icon: Icons.language,
-    //   content: Center(
-    //     child: Text(
-    //       'Select your preferred language for the application.',
-    //       style: TextStyle(fontSize: 16.sp),
-    //       textAlign: TextAlign.center,
-    //     ),
-    //   ),
-    // ),
+    
     SettingTab(
       id: 'help_support',
       name: 'Help & Support',

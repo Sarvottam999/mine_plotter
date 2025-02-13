@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map_dragmarker/flutter_map_dragmarker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:myapp/core/enum/shape_type.dart';
@@ -29,21 +30,44 @@ class PointShape extends Shape {
   }
 
   // New method to get markers for the point
-  List<Marker> getMarkers() {
-    return points.map((point) => Marker(
-      point: point,
-      width: markerSize,
-      height: markerSize,
-      child:  Icon(
-        markerIcon,
-        color: markerColor,
-        size: markerSize,
-      ),
-    )).toList();
+  @override
+  List<DragMarker> getPoints() {
+    return points.map((point) =>
+    DragMarker(
+            key: GlobalKey<DragMarkerWidgetState>(),
+            point: point,
+            size: const Size(75, 50),
+            builder: (_, pos, __) {
+              return GestureDetector(
+                // onTap: () => _showMarkerPopup(context, pos),
+                child: const Icon(
+                  Icons.location_on,
+                  size: 50,
+                  color: Color.fromARGB(255, 129, 77, 250),
+                ),
+              );
+            },
+            onDragEnd: (details, point) {
+              debugPrint("Marker moved to: $point");
+            },
+          )
+    
+    //  Marker(
+    //   point: point,
+    //   width: markerSize,
+    //   height: markerSize,
+    //   child:  Icon(
+    //     markerIcon,
+    //     color: markerColor,
+    //     size: markerSize,
+    //   ),
+    // )
+    
+    ).toList();
   }
 
   @override
-  Map<String, dynamic> getDetails() {
+  Map<String, dynamic> getDetails(BuildContext context) {
     if (points.isEmpty) return {'type': 'Point'};
 
     var details = {
