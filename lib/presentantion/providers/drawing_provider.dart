@@ -8,6 +8,21 @@ import 'package:myapp/domain/entities/line_shape.dart';
 import 'package:myapp/domain/entities/marker_point.dart';
 import 'package:myapp/domain/entities/shape.dart';
 import 'package:myapp/domain/entities/square_shape.dart';
+// Replace the simple shape lists with a state class
+class DrawingState {
+  final List<Shape> shapes;
+  final List<LatLng> markers;
+
+  DrawingState({
+    required this.shapes,
+    required this.markers,
+  });
+
+  DrawingState.copy(DrawingState state)
+      : shapes = List.from(state.shapes),
+        markers = List.from(state.markers);
+}
+
 
 class DrawingProvider with ChangeNotifier {
   ShapeType _currentShape = ShapeType.none;
@@ -53,14 +68,27 @@ void toggleMarkerMode() {
     }
     notifyListeners();
   }
-   void addMarker(LatLng position) {
-    _markers.add(position);
-    print((" added marker ======= ${_markers}"));
+  //  void addMarker(LatLng position) {
+  //   _markers.add(position);
+  //   print((" added marker ======= ${_markers}"));
     
-    _isAddingMarker = false;
-    _currentShape= ShapeType.none;
-    notifyListeners();
-  }
+  //   _isAddingMarker = false;
+  //   _currentShape= ShapeType.none;
+  //   notifyListeners();
+  // }
+  void addMarker(LatLng position) {
+  // Save current state before making changes
+  _undoStack.add(DrawingState(
+    shapes: List.from(_shapes),
+    markers: List.from(_markers),
+  ));
+  _redoStack.clear(); // Clear redo stack when new action is performed
+
+  _markers.add(position);
+  _isAddingMarker = false;
+  _currentShape = ShapeType.none;
+  notifyListeners();
+}
     void updateMarkerPosition(int index, LatLng newPosition) {
     if (index < 0 || index >= _markers.length) return;
     
@@ -87,8 +115,20 @@ void toggleMarkerMode() {
 
 
   // Undo/Redo stacks
-  final List<List<Shape>> _undoStack = [];
-  final List<List<Shape>> _redoStack = [];
+  // final List<List<Shape>> _undoStack = [];
+  // final List<List<Shape>> _redoStack = [];
+  // Update the stacks in DrawingProvider
+final List<DrawingState> _undoStack = [];
+final List<DrawingState> _redoStack = [];
+
+void _saveCurrentState() {
+  _undoStack.add(DrawingState(
+    shapes: List.from(_shapes),
+    markers: List.from(_markers),
+  ));
+  _redoStack.clear();
+}
+
 
   ShapeType get currentShape => _currentShape;
   List<Shape> get shapes => _shapes;
@@ -151,35 +191,81 @@ void toggleMarkerMode() {
           break;
       }
 
-      if (newShape != null) {
-        // Save current state to undo stack before adding new shape
-        _undoStack.add(List.from(_shapes));
-        _redoStack.clear(); // Clear redo stack when new action is performed
+      // if (newShape != null) {
+      //   // Save current state to undo stack before adding new shape
+      //   _undoStack.add(List.from(_shapes));
+      //   _redoStack.clear(); // Clear redo stack when new action is performed
 
-        _shapes.add(newShape);
-        _currentPoints = [];
-        _currentShape = ShapeType.none;
-      }
+      //   _shapes.add(newShape);
+      //   _currentPoints = [];
+      //   _currentShape = ShapeType.none;
+      // }
+          if (newShape != null) {
+      // Save current state to undo stack before adding new shape
+      _undoStack.add(DrawingState(
+        shapes: List.from(_shapes),
+        markers: List.from(_markers),
+      ));
+      _redoStack.clear();
+
+      _shapes.add(newShape);
+      _currentPoints = [];
+      _currentShape = ShapeType.none;
+    }
+
     }
 
     notifyListeners();
   }
 
+  // void undo() {
+  //   if (!canUndo) return;
+
+  //   _redoStack.add(List.from(_shapes));
+  //   _shapes = List.from(_undoStack.removeLast());
+  //   notifyListeners();
+  // }
+
+  // void redo() {
+  //   if (!canRedo) return;
+
+  //   _undoStack.add(List.from(_shapes));
+  //   _shapes = List.from(_redoStack.removeLast());
+  //   notifyListeners();
+  // }
   void undo() {
-    if (!canUndo) return;
+  if (_undoStack.isEmpty) return;
 
-    _redoStack.add(List.from(_shapes));
-    _shapes = List.from(_undoStack.removeLast());
-    notifyListeners();
-  }
+  // Save current state to redo stack
+  _redoStack.add(DrawingState(
+    shapes: List.from(_shapes),
+    markers: List.from(_markers),
+  ));
 
-  void redo() {
-    if (!canRedo) return;
+  // Restore previous state
+  final previousState = _undoStack.removeLast();
+  _shapes = List.from(previousState.shapes);
+  _markers = List.from(previousState.markers);
+  
+  notifyListeners();
+}
 
-    _undoStack.add(List.from(_shapes));
-    _shapes = List.from(_redoStack.removeLast());
-    notifyListeners();
-  }
+void redo() {
+  if (_redoStack.isEmpty) return;
+
+  // Save current state to undo stack
+  _undoStack.add(DrawingState(
+    shapes: List.from(_shapes),
+    markers: List.from(_markers),
+  ));
+
+  // Restore next state
+  final nextState = _redoStack.removeLast();
+  _shapes = List.from(nextState.shapes);
+  _markers = List.from(nextState.markers);
+  
+  notifyListeners();
+}
 
   void updateCursor(LatLng? point) {
     _currentCursor = point;
@@ -297,4 +383,11 @@ void toggleMarkerMode() {
       notifyListeners();
     }
   }
+
+  // -------------- for search functionality -------------
+  void addSearchMarker(LatLng position) {
+  _saveCurrentState();  // For undo/redo
+  _markers.add(position);
+  notifyListeners();
+}
 }

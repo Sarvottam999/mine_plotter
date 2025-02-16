@@ -4,6 +4,7 @@ import 'package:myapp/core/enum/shape_type.dart';
 import 'package:myapp/presentantion/providers/coordinate_provider.dart';
 import 'package:myapp/presentantion/providers/dowanload_provider.dart';
 import 'package:myapp/presentantion/providers/drawing_provider.dart';
+import 'package:myapp/presentantion/providers/search_provider.dart';
 import 'package:myapp/presentantion/screens/Settings/CoordinateSetting/cordinate_setting_screen.dart';
 import 'package:myapp/presentantion/screens/map_screen/map_screen.dart';
 import 'package:myapp/presentantion/widgets/build_fishbone_type_selector.dart';
@@ -88,6 +89,7 @@ class DrawingApp extends StatelessWidget {
         return MultiProvider(
             providers: [
               ChangeNotifierProvider(create: (_) => CoordinateProvider(prefsService)),
+              ChangeNotifierProvider(create: (_) => SearchProvider()),
               ChangeNotifierProvider(create: (_) => DrawingProvider()),
               ChangeNotifierProvider(
                 create: (_) => MapProvider(),

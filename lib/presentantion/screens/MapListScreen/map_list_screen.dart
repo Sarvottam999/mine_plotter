@@ -38,9 +38,7 @@ class _MapListScreenState extends State<MapListScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      // appBar: AppBar(
-      //   title: Text('Offline Maps'),
-      // ),
+    
       body: Consumer<MapProvider>(
         builder: (context, mapProvider, child) {
           return Column(
@@ -55,15 +53,27 @@ class _MapListScreenState extends State<MapListScreen> {
                       Text(mapProvider.currentStatus),
                     ],
                   ),
-                ),
-                //  SizedBox(
-                // height: screen_size.height * 0.78,
-                // child: MapListItem()),
+                ), 
 
                 // ====================  list =============================
-                 SizedBox(
+                 Container(
                   height: screen_size.height * 0.7,
-                   child: GridView.builder(
+                   child: mapProvider.downloadedMaps.length == 0 ? 
+                   Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: AspectRatio(
+                              aspectRatio: 16 / 9,
+                        child: Image.asset(
+                          'assets/nothing_found.png',
+                          width: double.infinity,
+                        ),
+                      ),
+                    ),
+                  )
+                   
+                   
+                   : GridView.builder(
                    
                     
                                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -95,7 +105,7 @@ class _MapListScreenState extends State<MapListScreen> {
                 child: NDownloadButton(
                   width: 300,
                   hideShadowa: true,
-                  label: 'DOWNLOAD MORE MAPS',
+                  label: 'DOWNLOAD MAPS',
                   primaryColor: Colors.black,
                   secondaryColor: Colors.white,
                   onPressed: () {

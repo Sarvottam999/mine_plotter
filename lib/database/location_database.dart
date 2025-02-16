@@ -1,103 +1,66 @@
-// lib/database/location_database.dart
+// // lib/database/location_database.dart
+import 'package:myapp/presentantion/screens/SettingScreen/models/stored_location.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+
+
+
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class LocationDatabase {
+  static final LocationDatabase instance = LocationDatabase._init();
   static Database? _database;
-  
+
+  LocationDatabase._init();
+
   Future<Database> get database async {
     if (_database != null) return _database!;
-    _database = await initDB();
+    _database = await _initDB('locations.db');
     return _database!;
   }
 
-  Future<Database> initDB() async {
-    String path = await getDatabasesPath();
-    return await openDatabase(
-      join(path, 'locations_database.db'),
-      onCreate: (db, version) async {
-        await db.execute('''
-          CREATE TABLE locations(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            display_name TEXT,
-            lat REAL,
-            lon REAL,
-            type TEXT,
-            region TEXT,
-            search_terms TEXT
-          )
-        ''');
-      },
-      version: 1,
+  Future<Database> _initDB(String filePath) async {
+    final dbPath = await getDatabasesPath();
+    final path = join(dbPath, filePath);
+
+    return await openDatabase(path, version: 1, onCreate: _createDB);
+  }
+
+  Future _createDB(Database db, int version) async {
+    await db.execute('''
+    CREATE TABLE stored_locations(
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      latitude REAL,
+      longitude REAL,
+      zone TEXT,
+      easting REAL,
+      northing REAL,
+      isWGS84 INTEGER NOT NULL
+    )
+    ''');
+  }
+
+  Future<StoredLocation> create(StoredLocation location) async {
+    final db = await instance.database;
+    final id = await db.insert('stored_locations', location.toMap());
+    return location.copyWith(id: id);
+  }
+
+  Future<List<StoredLocation>> getAllLocations() async {
+    final db = await instance.database;
+    final result = await db.query('stored_locations');
+    return result.map((map) => StoredLocation.fromMap(map)).toList();
+  }
+
+  Future<void> deleteLocation(int id) async {
+    final db = await instance.database;
+    await db.delete(
+      'stored_locations',
+      where: 'id = ?',
+      whereArgs: [id],
     );
-  }
-
-  Future<void> addLocation(Map<String, dynamic> location) async {
-    final db = await database;
-    
-    // Create search terms for better searching
-    String searchTerms = [
-      location['display_name'],
-      location['type'],
-      location['region'],
-    ].where((term) => term != null).join(' ').toLowerCase();
-
-    await db.insert(
-      'locations',
-      {
-        'display_name': location['display_name'],
-        'lat': location['lat'],
-        'lon': location['lon'],
-        'type': location['type'] ?? 'unknown',
-        'region': location['region'] ?? 'unknown',
-        'search_terms': searchTerms,
-      },
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  }
-
-  Future<List<Map<String, dynamic>>> searchLocations(String query) async {
-    final db = await database;
-    final searchTerm = query.toLowerCase();
-    
-    return await db.query(
-      'locations',
-      where: 'search_terms LIKE ?',
-      whereArgs: ['%$searchTerm%'],
-      orderBy: 'display_name ASC',
-      limit: 10,
-    );
-  }
-
-  Future<List<Map<String, dynamic>>> getLocationsByRegion(String region) async {
-    final db = await database;
-    return await db.query(
-      'locations',
-      where: 'region = ?',
-      whereArgs: [region],
-      orderBy: 'display_name ASC',
-    );
-  }
-
-  Future<void> clearAllLocations() async {
-    final db = await database;
-    await db.delete('locations');
-  }
-
-  Future<int> getLocationCount() async {
-    final db = await database;
-    final result = await db.rawQuery('SELECT COUNT(*) as count FROM locations');
-    return Sqflite.firstIntValue(result) ?? 0;
-  }
-
-  Future<bool> locationExists(String displayName) async {
-    final db = await database;
-    final result = await db.query(
-      'locations',
-      where: 'display_name = ?',
-      whereArgs: [displayName],
-      limit: 1,
-    );
-    return result.isNotEmpty;
   }
 }
+

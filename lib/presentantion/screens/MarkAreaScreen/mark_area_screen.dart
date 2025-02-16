@@ -77,7 +77,9 @@ class MapSelectorScreen extends StatelessWidget {
         height: MediaQuery.of(context).size.height,
         child: Stack(
           children: [
-            Expanded(
+            Container(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
               child: MapSelector(),
             ),
             Positioned(
@@ -235,7 +237,9 @@ class MapSelector extends StatelessWidget {
   Widget build(BuildContext context) {
         final provider = Provider.of<MapProvider>(context, listen: false);
 
-    return Consumer<MapProvider>(
+    return 
+    
+    Consumer<MapProvider>(
       builder: (context, provider, child) => FlutterMap(
         options: MapOptions(
           initialCenter: LatLng(51.5, -0.09),
@@ -246,10 +250,10 @@ class MapSelector extends StatelessWidget {
         },
         ),
         children: [
-          TileLayer(
-            urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            subdomains: ['a', 'b', 'c'],
-          ),
+          // TileLayer(
+          //   urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+          //   subdomains: ['a', 'b', 'c'],
+          // ),
           PolygonLayer(
             polygons: [
               if (provider.selectedPoints.length >= 3)

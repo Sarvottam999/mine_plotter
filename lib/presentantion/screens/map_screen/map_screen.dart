@@ -20,6 +20,7 @@ import 'package:myapp/presentantion/screens/SettingScreen/setting_screen.dart';
 import 'package:myapp/presentantion/screens/map_screen/utils.dart';
 import 'package:myapp/presentantion/widgets/ShowMyLocationButton.dart';
 import 'package:myapp/presentantion/widgets/coordinate_popup.dart';
+import 'package:myapp/presentantion/widgets/coordinate_search_bar.dart';
 import 'package:myapp/presentantion/widgets/current_location_marke.dart';
 import 'package:myapp/presentantion/widgets/current_location_marker.dart';
 import 'package:myapp/presentantion/widgets/draggable_coordinate_shower.dart';
@@ -158,15 +159,13 @@ class _MapScreenState extends State<MapScreen> {
                     // setState(() {
                     // selectedMarkerPoints.add(point);
                     // });
-                  } 
+                  }
                   // else if (provider.isSelectionMode) {
                   //   // _handleShapeSelection(provider, point);
 
                   //   // sadcdcas
 
-
-
-                  // } 
+                  // }
                   else if (provider.currentShape != ShapeType.none) {
                     provider.addPoint(point);
                   } else {
@@ -217,8 +216,6 @@ class _MapScreenState extends State<MapScreen> {
                               const AssetImage('assets/placeholder_tile.png'),
                         )
 
-
-
                     // TileLayer(
                     //   urlTemplate:
                     //       provider.currentTilePath ?? currentMapLayer.url,
@@ -230,9 +227,8 @@ class _MapScreenState extends State<MapScreen> {
                     //       : currentMapLayer.subdomains,
                     // ),
                     ),
-                   
- 
-      //           // TileLayer(
+
+                //           // TileLayer(
                 //   urlTemplate: currentMapLayer.url,
                 //   // 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                 //   subdomains: currentMapLayer.subdomains,
@@ -271,7 +267,6 @@ class _MapScreenState extends State<MapScreen> {
                   alignment: Alignment.center,
                   child: const ShapeEditor(),
                 ),
-                
 
                 // Popup Layer
                 //       PopupMarkerLayer(
@@ -330,16 +325,13 @@ class _MapScreenState extends State<MapScreen> {
                   return DragMarkers(markers: _polyEditor.edit());
                 }),
 
-    //             DraggableCoordinateMarker(
-    //   mapController: _mapController,
-    // ),
-     DraggableCoordinateMarker(
-    ),
-    
+                //             DraggableCoordinateMarker(
+                //   mapController: _mapController,
+                // ),
+                DraggableCoordinateMarker(),
 
 //  DragMarkers(
 //                 alignment: Alignment.topCenter,
-
 
 //                       markers: [
 //                           DragMarker(
@@ -359,28 +351,45 @@ class _MapScreenState extends State<MapScreen> {
 
               ]),
 
-              Positioned(
-                 right: 10,
-              // top: 0,
-              bottom: screenSize.height * 0.2,
-              child:
-              SelectionButton(mapController: _mapController,), // Add this line
-),
+          
 
-       
-              Positioned(
-              right: 10,
-              bottom: screenSize.height * 0.15,
-                      child: Center(
-                        child: CurrentLocationLayer(
-                              mapController: _mapController,
-                              onLocationMarked: (location) {
-                                final provider = Provider.of<DrawingProvider>(context, listen: false);
-                                provider.addMarker(location);
-                              },
-                            ),
-                      ),
-                    ),
+ 
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 10,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: CoordinateSearch(
+                mapController: _mapController,
+              ),
+            ),
+          ),
+
+          // -------------------  right bottom button --------------
+          Positioned(
+            right: 10,
+            // top: 0,
+            bottom: screenSize.height * 0.25,
+            child: SelectionButton(
+              mapController: _mapController,
+            ), // Add this line
+          ),
+
+
+          Positioned(
+            right: 10,
+            bottom: screenSize.height * 0.19,
+            child: Center(
+              child: CurrentLocationLayer(
+                mapController: _mapController,
+                onLocationMarked: (location) {
+                  final provider =
+                      Provider.of<DrawingProvider>(context, listen: false);
+                  provider.addMarker(location);
+                },
+              ),
+            ),
+          ),
 
 // ###############################################################################
           // **************   new  *****************
@@ -496,12 +505,8 @@ class _MapScreenState extends State<MapScreen> {
                   currentMapLayer = value;
                 });
               })),
-
-       
         ],
       ),
     );
   }
 }
-
- 
