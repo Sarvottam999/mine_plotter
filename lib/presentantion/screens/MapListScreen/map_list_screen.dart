@@ -10,6 +10,7 @@ import 'package:myapp/presentantion/screens/map_screen/utils.dart';
 import 'package:myapp/presentantion/widgets/download_button.dart';
 import 'package:myapp/presentantion/widgets/location_card2.dart';
 import 'package:myapp/presentantion/widgets/location_card.dart';
+import 'package:myapp/utils/no_content_view.dart';
 import 'package:myapp/utils/util.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -40,83 +41,97 @@ class _MapListScreenState extends State<MapListScreen> {
     
       body: Consumer<MapProvider>(
         builder: (context, mapProvider, child) {
-          return Column(
-            children: [
-              if (mapProvider.isDownloading)
-                Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      LinearProgressIndicator(
-                          value: mapProvider.currentProgress),
-                      Text(mapProvider.currentStatus),
-                    ],
-                  ),
-                ), 
-
-                // ====================  list =============================
-                 Container(
-                  height: screen_size.height * 0.7,
-                   child: mapProvider.downloadedMaps.length == 0 ? 
-                   Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: AspectRatio(
-                              aspectRatio: 16 / 9,
-                        child: Image.asset(
-                          'assets/nothing_found.png',
-                          width: double.infinity,
-                        ),
-                      ),
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                if (mapProvider.isDownloading)
+                  Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        LinearProgressIndicator(
+                            value: mapProvider.currentProgress),
+                        Text(mapProvider.currentStatus),
+                      ],
                     ),
-                  )
-                   
-                   
-                   : GridView.builder(
-                   
-                    
-                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                           crossAxisCount: crossAxisCount,
-                           crossAxisSpacing: 10,
-                           mainAxisSpacing: 10,
-                           childAspectRatio:4.8/6, // Adjust aspect ratio if needed
+                  ), 
+            
+                  // ====================  list =============================
+                   Container(
+                    height: screen_size.height * 0.7,
+                     child: mapProvider.downloadedMaps.length == 0 ? 
+                     Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child:  NoContentView(
+            text: 'No offline maps are downloaded!!',
+                    ),
+                        // child: AspectRatio(
+                        //         aspectRatio: 16 / 9,
+                        //   child: Image.asset(
+                        //     'assets/nothing_found.png',
+                        //     width: double.infinity,
+                        //   ),
+                        // ),
+                      ),
+                    )
+                     
+                     
+                     : GridView.builder(
+                      
+                     
+                      
+                                  gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(
+    crossAxisCount: 2, 
+                                    
+                                      // maxCrossAxisExtent: 200,
+                                      
+                childAspectRatio: 0.7,
+                mainAxisSpacing: 20,
+                crossAxisSpacing: 16,
+                
+                            //  crossAxisCount: crossAxisCount,
+                            //  crossAxisSpacing: 10,
+                            //  mainAxisSpacing: 10,
+                            //  childAspectRatio:4.2/6, // Adjust aspect ratio if needed
+                                  ),
+                                  padding: const EdgeInsets.all(10),
+                                  itemCount: mapProvider.downloadedMaps.length,
+                                  itemBuilder: (context, index) {
+                             return MapListItem(map: mapProvider.downloadedMaps[index], index: index,);
+                                  },
                                 ),
-                                padding: const EdgeInsets.all(10),
-                                itemCount: mapProvider.downloadedMaps.length,
-                                itemBuilder: (context, index) {
-                           return MapListItem(map: mapProvider.downloadedMaps[index], index: index,);
-                                },
-                              ),
-                 ),
-              // SizedBox(
-              //   height: screenSize.height * 0.7,
-              //   width: screenSize.width,
-              //   child: mapProvider.downloadedMaps.length > 0
-              //       ? ListView.builder(
-              //           itemCount: mapProvider.downloadedMaps.length,
-              //           itemBuilder: (context, index) =>
-              //               MapListItem(index: index),
-              //         )
-              //       : EmptyNotificationsScreen(),
-              // ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 28.0),
-                child: NDownloadButton(
-                  width: 300,
-                  hideShadowa: true,
-                  label: 'DOWNLOAD MAPS',
-                  primaryColor: Colors.black,
-                  secondaryColor: Colors.white,
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MapSelectorScreen(),
-                        ));
-                  },
+                   ),
+                // SizedBox(
+                //   height: screenSize.height * 0.7,
+                //   width: screenSize.width,
+                //   child: mapProvider.downloadedMaps.length > 0
+                //       ? ListView.builder(
+                //           itemCount: mapProvider.downloadedMaps.length,
+                //           itemBuilder: (context, index) =>
+                //               MapListItem(index: index),
+                //         )
+                //       : EmptyNotificationsScreen(),
+                // ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 28.0),
+                  child: NDownloadButton(
+                    width: 300,
+                    hideShadowa: true,
+                    label: 'DOWNLOAD MAPS',
+                    primaryColor: Colors.black,
+                    secondaryColor: Colors.white,
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MapSelectorScreen(),
+                          ));
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         },
       ),
@@ -135,19 +150,16 @@ class MapListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<MapProvider>(
       builder: (context, mapProvider, child) {
-        // final map = mapProvider.downloadedMaps[index];
-        print('====================> ${map.id}');
-        // return Listcard(map: map);
         return FutureBuilder(
             future: getPreviewImage(map.id),
             builder: (context, snapshot) {
-              print(map.date);
 
               return Container(
                 margin: EdgeInsets.symmetric(vertical: 5.h),
-                child: LocationCard(
+                child: 
+                
+                ProductCard2(
                   onMapSelect: () {
-                    print('clicked ...............');
                     context.read<MapProvider>().setPreviewMap(map.id);
                     Navigator.push(
                       context,
@@ -158,15 +170,13 @@ class MapListItem extends StatelessWidget {
                       ),
                     );
 
-                    // Provider.of<MapProvider>(context, listen: false).deleteMap(index);
-                  },
+                   },
                   onPressed: () {
                     Provider.of<MapProvider>(context, listen: false)
                         .deleteMap(index);
                   },
                   fileImage: snapshot.hasData ? snapshot.data! : null,
-                  // imageUrl: snapshot.hasData ? null : 'https://via.placeholder.com/200', // Placeholder for fallback
-                  name: map.name,
+                   name: map.name,
                   time: formatDateTime(map.date),
                   northEast:
                       ' Lat : ${map.northEast.latitude.toStringAsFixed(2)} | Lag : ${map.northEast.longitude.toStringAsFixed(2)}',
@@ -175,6 +185,9 @@ class MapListItem extends StatelessWidget {
                   areaSqKm: '${map.areaSqKm.toStringAsFixed(2)} km²',
                   // latitude: '37.7749° N',
                 ),
+              
+              
+              
               );
             });
       },

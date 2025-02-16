@@ -103,7 +103,7 @@ class LocationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
       final screen_size = MediaQuery.of(context).size;
-    final isTablet = MediaQuery.of(context).size.width > 800;
+    final isTablet = MediaQuery.of(context).size.width > 600;
     print("======================= ${isTablet}");
     return Container(
       padding: EdgeInsets.all(2.sp),
@@ -165,7 +165,7 @@ class LocationCard extends StatelessWidget {
                     icon: Icon(
                       Icons.cancel_outlined,
                       color: Colors.white,
-                      size: 8.sp,
+                      size: isTablet? 8.sp:12.sp,
                     ),
                     padding: EdgeInsets.all(1.sp),
                     constraints: BoxConstraints(),
@@ -200,21 +200,21 @@ class LocationCard extends StatelessWidget {
                             name,
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 5.sp,
+                              fontSize:isTablet? 10.sp : 12.sp,
                               fontWeight: FontWeight.bold,
                               // overflow: TextOverflow.ellipsis
                             ),
                             softWrap: true,
                           ),
                         ),
-                        SizedBox(height: 3.sp),
+                        // SizedBox(height: 3.sp),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
                               Icons.access_time,
                               color: Colors.grey[400],
-                              size: 16,
+                              size:isTablet? 16 :12.sp,
                             ),
                             SizedBox(width: 4),
                             Container(
@@ -227,7 +227,7 @@ class LocationCard extends StatelessWidget {
                                 time,
                                 style: TextStyle(
                                   color: Colors.grey[400],
-                                  fontSize: 4.sp
+                                  fontSize:isTablet?  4.sp : 12.sp
                                 ),
                                 softWrap: true,
                             overflow: TextOverflow.ellipsis
@@ -237,8 +237,6 @@ class LocationCard extends StatelessWidget {
                           ],
                         ),
                         SizedBox(height: 2.sp),
-
-                        
                         // -----------------------------
                         Container(
                           decoration: BoxDecoration(
@@ -269,14 +267,15 @@ class LocationCard extends StatelessWidget {
                                       decoration: BoxDecoration(
                                           color: Colors.white,
                                           borderRadius: BorderRadius.circular(1.w)),
-                                      child: Text("NE", style: TextStyle(fontSize: 3.sp),),
+                        
+                                      child: Text("NE", style: TextStyle(fontSize:isTablet? 3.sp: 10.sp),),
                                     ),
                                     Flexible(
                                       child: Text(
                                         northEast ,
                                         style: TextStyle(
                                           color: Colors.grey[300],
-                                          fontSize: 3.sp,
+                                          fontSize: isTablet? 4.sp : 12.sp,
                                         ),
                                       ),
                                     ),
@@ -301,14 +300,14 @@ class LocationCard extends StatelessWidget {
                                       decoration: BoxDecoration(
                                           color: Colors.white,
                                           borderRadius: BorderRadius.circular(1.w)),
-                                      child: Text("SW",style: TextStyle(fontSize: 3.sp) ),
+                                      child: Text("SW",style: TextStyle(fontSize:isTablet? 3.sp: 10.sp) ),
                                     ),
                                     Flexible(
                                       child: Text(
                                         southWest,
                                         style: TextStyle(
                                           color: Colors.grey[300],
-                                          fontSize: 3.sp,
+                                          fontSize: isTablet? 4.sp: 12.sp,
                                           // overflow: TextOverflow.ellipsis
                                         ),
                                       ),
@@ -334,14 +333,14 @@ class LocationCard extends StatelessWidget {
                                       decoration: BoxDecoration(
                                           color: Colors.white,
                                           borderRadius: BorderRadius.circular(1.w)),
-                                      child: Text("Area", style: TextStyle(fontSize: 3.sp)),
+                                      child: Text("Area", style: TextStyle(fontSize: isTablet? 3.sp: 12.sp)),
                                     ),
                                     Flexible(
                                       child: Text(
                                         areaSqKm,
                                         style: TextStyle(
                                           color: Colors.grey[300],
-                                          fontSize: 3.sp,
+                                          fontSize: isTablet? 4.sp: 12.sp,
                                           // overflow: TextOverflow.ellipsis
                                         ),
                                       ),

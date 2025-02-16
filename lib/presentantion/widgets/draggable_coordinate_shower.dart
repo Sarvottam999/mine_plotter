@@ -135,7 +135,9 @@ class DraggableCoordinateMarker extends StatelessWidget {
   // Y: -(container height + spacing + pin height)
   // Example: If pin height is 32px:
   // Y = -(150 + 20 + 32) = -202
-  offset: const Offset(-150, -202),
+  // offset: const Offset(-150, -202),
+              offset: const Offset(0.0, -8.0),
+
   builder: (_, pos, ___) {
     return Column(
       mainAxisSize: MainAxisSize.min,

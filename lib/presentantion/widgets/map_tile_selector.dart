@@ -2,9 +2,11 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:myapp/presentantion/providers/dowanload_provider.dart';
 import 'package:myapp/presentantion/screens/MarkAreaScreen/models/downloaded_map.dart';
+import 'package:myapp/utils/contant.dart';
 import 'package:myapp/utils/util.dart';
 import 'package:provider/provider.dart';
 
@@ -15,6 +17,7 @@ class MapTileSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isTablet = MediaQuery.of(context).size.width > 600;
 
   
     return Consumer<MapProvider>(
@@ -32,6 +35,7 @@ class MapTileSelector extends StatelessWidget {
       ),
             padding: EdgeInsets.symmetric(vertical: 5, horizontal: 17),
             decoration: BoxDecoration(
+              border: Border.all(color: Colors.black26),
                 borderRadius: BorderRadius.circular(15),
                 color: Colors.white),
             height: 5 ,
@@ -40,6 +44,7 @@ class MapTileSelector extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
         
               children: [
+                
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 15.0),
                   child: Text(
@@ -48,27 +53,65 @@ class MapTileSelector extends StatelessWidget {
                         fontWeight: FontWeight.bold, fontSize: 18),
                   ),
                 ),
-                for (var map in provider.downloadedMaps)
-                  Container(
-                    decoration: BoxDecoration(
-                        color:   Colors.grey[100],
-                        borderRadius: BorderRadius.circular(8)),
-                    child: ListTile(
-                      title: Text(map.name, style: TextStyle(fontWeight: FontWeight.w500),),
-                      subtitle:
-                          Text('${map.areaSqKm.toStringAsFixed(2)} km²'),
-                      onTap: () =>
-                          {goToMapArea(map, mapController), provider.loadOfflineMap(map)},
-                    ),
-                  ),
-                ListTile(
+                 ListTile(
                   title: Text('Online Map'),
                   leading: Icon(Icons.public),
                   onTap: () => provider.loadOfflineMap(null),
+                ),
+                // for (var map in provider.downloadedMaps)
+                Expanded(
+                  child: ListView.builder(
+                    itemCount:provider.downloadedMaps.length ,
+                    
+                    
+                    itemBuilder: (context, index) {
+                      var map = provider.downloadedMaps[index];
+                    
+                  
+                    return  Container(
+                      decoration: BoxDecoration(
+                          // color:   Colors.grey[100],
+                          borderRadius: BorderRadius.circular(8)),
+                          child: Container(
+                          constraints: BoxConstraints(
+                            minHeight: 70
+                          ),
+                          margin: EdgeInsets.symmetric(vertical: 5.h),
+                          // padding: EdgeInsets.all(  10),
+                          decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 255, 234, 203), // Background color
+                        borderRadius: BorderRadius.circular(12.r), // Rounded corners
+                        border: Border.all(color: Colors.orange, width: 2), // Border color
+                          ),
+                          // child:
+                             
+                          // ),
+                      child:
+                      ListTile(
+                        // trailing: ,
+                        title: Row( 
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Flexible(child: Text(map.name, style: TextStyle(fontWeight: FontWeight.bold,fontSize:isTablet?6.sp: 12.sp ),)),
+                            Icon(Icons.navigate_next, color: my_orange,)
+                          
+                          
+                          ],
+                        ),
+                      
+                        subtitle:
+                            Text('${map.areaSqKm.toStringAsFixed(2)} km²'),
+                        onTap: () =>
+                            {goToMapArea(map, mapController), provider.loadOfflineMap(map)},
+                      ),
+                    ),
+                    );
+                  },),
                 )
+                 
+               
               ],
-              // children: provider.downloadedMaps.map((item)=>Text('text')
-              // ).toList()
+            
             ));
       },
     );

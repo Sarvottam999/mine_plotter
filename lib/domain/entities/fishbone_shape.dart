@@ -7,6 +7,10 @@ import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:myapp/core/enum/fishbone_type.dart';
 import 'package:myapp/core/enum/shape_type.dart';
+import 'package:myapp/presentantion/providers/coordinate_provider.dart';
+import 'package:myapp/utils/indian_grid_converter.dart';
+import 'package:myapp/utils/util.dart';
+import 'package:provider/provider.dart';
 import './shape.dart';
 
 class FishboneConfiguration {
@@ -255,17 +259,45 @@ class FishboneShape extends Shape {
   @override
   Map<String, dynamic> getDetails(BuildContext context) {
     if (points.isEmpty) return {'type': fishboneTitle[fishboneType]};
+        final provider = context.read<CoordinateProvider>();
+
     
     var details = {
-      'type':fishboneType,
+      'type':fishboneTitle[fishboneType],
       'start': '${points[0].latitude.toStringAsFixed(6)}, ${points[0].longitude.toStringAsFixed(6)}',
     };
 
+       if (provider.showIndianGrid) {
+      final startGridCoords = IndianGridConverter.latLongToGrid(
+        provider.selectedZone,
+        points[0].latitude,
+        points[0].longitude,
+      );
+      
+      if (startGridCoords != null) {
+        details['start_grid'] = 'E: ${startGridCoords.easting.toStringAsFixed(3)} m, N: ${startGridCoords.northing.toStringAsFixed(3)} m';
+      }
+    }
+
+
     if (points.length > 1) {
       details['end'] = '${points[1].latitude.toStringAsFixed(6)}, ${points[1].longitude.toStringAsFixed(6)}';
-      details['distance'] = '${(calculateDistance() / 1000).toStringAsFixed(2)} km';
+
+        if (provider.showIndianGrid) {
+        final endGridCoords = IndianGridConverter.latLongToGrid(
+          provider.selectedZone,
+          points[1].latitude,
+          points[1].longitude,
+        );
+        
+        if (endGridCoords != null) {
+          details['end_grid'] = 'E: ${endGridCoords.easting.toStringAsFixed(3)}m, N: ${endGridCoords.northing.toStringAsFixed(3)}m';
+        }
+      }
+      // details['distance'] = '${(calculateDistance() / 1000).toStringAsFixed(2)} km';
+      details['distance'] = '${calculateDistanceInMeters(points[0], points[1]).toStringAsFixed(2)}m (${(calculateDistance() / 1000).toStringAsFixed(2)}km)';
+
       
-      // Calculate number of markers
       double totalDistance = calculateDistance();
       double availableDistance = totalDistance - (config.startFromMeters + config.endBeforeMeters);
       int numberOfLines = (availableDistance / config.lineSpacing).floor();

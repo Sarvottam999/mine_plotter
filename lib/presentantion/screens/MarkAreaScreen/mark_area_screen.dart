@@ -3,8 +3,10 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_dragmarker/flutter_map_dragmarker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:myapp/molecules/Buttons/icon_button.dart';
+import 'package:myapp/molecules/Buttons/outline_filled_button.dart';
 import 'package:myapp/presentantion/providers/dowanload_provider.dart';
 import 'package:myapp/presentantion/screens/MarkAreaScreen/models/downloaded_map.dart';
+import 'package:myapp/utils/contant.dart';
 import 'package:provider/provider.dart';
 
 class MapSelectorScreen extends StatelessWidget {
@@ -15,8 +17,10 @@ class MapSelectorScreen extends StatelessWidget {
     TextEditingController nameController = TextEditingController();
 
     showDialog(
+      
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
         title: Text('Download Map'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -24,9 +28,19 @@ class MapSelectorScreen extends StatelessWidget {
             TextField(
               controller: nameController,
               decoration: InputDecoration(
+                hoverColor: my_orange,
+                labelStyle: TextStyle(
+                  color: my_orange
+                ),
                 labelText: 'Map Name',
                 hintText: 'Enter a name for this map',
+                          focusedBorder:OutlineInputBorder(
+            borderSide: const BorderSide(color: my_orange, width: 2.0),
+            // borderRadius: BorderRadius.circular(25.0),
+
               ),
+              
+            )
             ),
             SizedBox(height: 16),
             Text('Area: ${provider.calculateArea().toStringAsFixed(2)} km²'),
@@ -35,11 +49,14 @@ class MapSelectorScreen extends StatelessWidget {
           ],
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
             child: Text('Cancel'),
           ),
-          ElevatedButton(
+          NButtonOutline(
+            color: my_orange,
+            label: 'Download',
+            
             onPressed: () {
               final mapName = nameController.text.isNotEmpty
                   ? nameController.text
@@ -59,10 +76,9 @@ class MapSelectorScreen extends StatelessWidget {
               provider.downloadMap(map, provider.zoomRange.start.round(),
                   provider.zoomRange.end.round());
 
-              Navigator.pop(context); // Close dialog
-              //  Navigator.pop(context);  // Close map selector
-            },
-            child: Text('Download'),
+              Navigator.pop(context);  
+             },
+            // child: Text('Download'),
           ),
         ],
       ),

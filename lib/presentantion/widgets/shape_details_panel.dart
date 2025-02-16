@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/core/enum/fishbone_type.dart';
 import 'package:myapp/utils/contant.dart';
+import 'package:myapp/utils/no_content_view.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -63,10 +64,14 @@ class ShapeDetailsPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final screen_size = MediaQuery.of(context).size;
     return Container(
+
       constraints: BoxConstraints(maxWidth: 300),
       padding: EdgeInsets.symmetric(horizontal: 17),
       width: screen_size.width * 0.6,
       decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.black26
+        ),
           borderRadius: BorderRadius.circular(15), color: Colors.white),
       child: Column(
         children: [
@@ -103,15 +108,16 @@ class ShapeDetailsPanel extends StatelessWidget {
             child: Consumer<DrawingProvider>(
               builder: (context, provider, _) {
                 if (provider.shapes.isEmpty) {
-                  return Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Image.asset(
-                        'assets/nothing_found.png',
-                        width: double.infinity,
-                      ),
-                    ),
-                  );
+                  return NoContentView(text: 'You did not add any elements to the map!!',);
+                  // return Center(
+                  //   child: Padding(
+                  //     padding: EdgeInsets.all(16.0),
+                  //     child: Image.asset(
+                  //       'assets/nothing_found.png',
+                  //       width: double.infinity,
+                  //     ),
+                  //   ),
+                  // );
                 }
 
                 return ListView.builder(

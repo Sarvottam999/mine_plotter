@@ -20,8 +20,10 @@ class NoContentView extends StatelessWidget {
         const SizedBox(height: 20), // Add spacing between illustration and text
         if (text != null && text!.isNotEmpty) // Corrected condition
           Text(
+            textAlign: TextAlign.center,
             text!, // Safe to use `text!` here because of the null check
             style: const TextStyle(
+              
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Colors.black54,

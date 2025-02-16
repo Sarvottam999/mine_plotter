@@ -134,7 +134,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             // Animated Page Indicator
             Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                  const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(
@@ -246,7 +246,7 @@ class OnboardingPage extends StatelessWidget {
     final screenWidth = ScreenUtil().screenWidth;
 
     return Padding(
-      padding: EdgeInsets.all(24.w),
+      padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start, // Changed from start to center

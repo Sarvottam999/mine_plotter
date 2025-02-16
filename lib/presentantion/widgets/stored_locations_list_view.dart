@@ -73,7 +73,7 @@ class _StoredLocationsViewState extends State<StoredLocationsView> {
             
             _locations.length == 0
                 ? NoContentView(
-                    text: 'No saved location found!!',
+                    text: 'No saved locations found!!',
                   )
                 : ListView.builder(
                     itemCount: _locations.length,
@@ -225,7 +225,10 @@ class LocationListItem extends StatelessWidget {
           }
       },
       child: Container(
-        // margin: EdgeInsets.symmetric(vertical: 5.h, horizontal: 10.w),
+        constraints: BoxConstraints(
+          minHeight: 70
+        ),
+        margin: EdgeInsets.symmetric(vertical: 5.h),
         padding: EdgeInsets.all(  10),
         decoration: BoxDecoration(
       color: const Color.fromARGB(255, 255, 234, 203), // Background color
@@ -233,9 +236,8 @@ class LocationListItem extends StatelessWidget {
       border: Border.all(color: Colors.orange, width: 2), // Border color
         ),
         child: Row(
-      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // Leading Icon (Circular Container)
         Container(
           padding: EdgeInsets.all(5),
           decoration: BoxDecoration(
@@ -251,7 +253,6 @@ class LocationListItem extends StatelessWidget {
       
         SizedBox(width: 12.w), // Spacing between icon and text
       
-        // Title and Subtitle Column
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,17 +261,17 @@ class LocationListItem extends StatelessWidget {
               Text(
                 location.name,
                 style: TextStyle(
-                  fontSize: isTablet ? 8.sp : 16.sp,
+                  fontSize: isTablet ? 4.sp : 16.sp,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               SizedBox(height: 4.h), // Space between title and subtitle
               Text(
                 location.isWGS84
-                    ? '${location.latitude}, ${location.longitude}'
+                    ? 'LAT:${location.latitude}${degreeSymbol}, LNG:${location.longitude}${degreeSymbol}'
                     : '${location.zone}\n E: ${location.easting}, N: ${location.northing}',
                 style: TextStyle(
-                  fontSize: isTablet ? 5.sp : 16.sp,
+                  fontSize: isTablet ? 4.sp : 12.sp,
                   color: Colors.grey[600],
                 ),
               ),
@@ -280,28 +281,33 @@ class LocationListItem extends StatelessWidget {
         // Spacer(),
       
         // Trailing Buttons (Delete & Navigate)
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            GestureDetector(
-              onTap: () {
-                _confirmDelete(context);
+        SizedBox(
+          // height: ,
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          
+            children: [
+              GestureDetector(
+                onTap: () {
+                  _confirmDelete(context);
+                  
+                },
                 
-              },
-              
-              child: Icon(Icons.delete, color: Colors.black)),
-              SizedBox(height: 4.h), // Space between title and subtitle
-
-              Icon(Icons.navigate_next_rounded, color: my_orange)
-            // IconButton(
-            //   icon: Icon(Icons.delete, color: Colors.black),
-            //   onPressed: () => _confirmDelete(context),
-            // ),
-            // IconButton(
-            //   icon: Icon(Icons.navigate_next_rounded, color: my_orange),
-            //   onPressed: () {},
-            // ),
-          ],
+                child: Icon(Icons.delete, color: Colors.black)),
+                SizedBox(height: 15.h), // Space between title and subtitle
+          
+                Icon(Icons.navigate_next_rounded, color: my_orange)
+              // IconButton(
+              //   icon: Icon(Icons.delete, color: Colors.black),
+              //   onPressed: () => _confirmDelete(context),
+              // ),
+              // IconButton(
+              //   icon: Icon(Icons.navigate_next_rounded, color: my_orange),
+              //   onPressed: () {},
+              // ),
+            ],
+          ),
         ),
       ],
         ),
@@ -399,12 +405,15 @@ class LocationListItem extends StatelessWidget {
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           title: Text("Delete Location?"),
           content: Text("Are you sure you want to delete this location?"),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text("Cancel"),
+              child: Text("Cancel", style: TextStyle(
+                color: Colors.grey
+              ),),
             ),
             TextButton(
               onPressed: () async {
@@ -416,7 +425,7 @@ class LocationListItem extends StatelessWidget {
               },
               child: Text(
                 "Delete",
-                style: TextStyle(color: Colors.red),
+                style: TextStyle(color: my_orange),
               ),
             ),
           ],

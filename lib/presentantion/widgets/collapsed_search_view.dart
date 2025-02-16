@@ -1,5 +1,3 @@
-// lib/widgets/collapsed_search_view.dart
-
 import 'package:flutter/material.dart';
 
 class CollapsedSearchView extends StatelessWidget {
@@ -15,8 +13,7 @@ class CollapsedSearchView extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        
-        width: 250,  // Fixed width for search bar
+        width: 250, 
         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -30,33 +27,29 @@ class CollapsedSearchView extends StatelessWidget {
           ],
         ),
         child: Padding(
-        padding: EdgeInsets.all(5),
+          padding: EdgeInsets.all(5),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-
               Row(
-            mainAxisSize: MainAxisSize.min,
-
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                   Icon(
-              Icons.search,
-              color: Colors.grey[600],
-                            ),
-                            SizedBox(width: 12),
-                            Flexible(
-              child: Text(
-                'Search coordinates...',
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 16,
-                ),
-              ),
-                            ),
-                  
+                  Icon(
+                    Icons.search,
+                    color: Colors.grey[600],
+                  ),
+                  SizedBox(width: 12),
+                  Flexible(
+                    child: Text(
+                      'Search coordinates...',
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
                 ],
               ),
-             
               Spacer(),
               Icon(
                 Icons.expand_more,

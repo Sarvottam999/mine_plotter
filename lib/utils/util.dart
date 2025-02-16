@@ -101,3 +101,13 @@ Future<File> getPreviewImage(String mapName) async {
     double getZoomLevel(double delta) {
       return log(360 / delta) / ln2;
     }
+
+
+   double calculateDistanceInMeters(LatLng start,LatLng end ) {
+    // if (points.length != 2) return 0;
+    return const Distance().as(
+      LengthUnit.Meter,
+      start,
+      end,
+    );
+  }

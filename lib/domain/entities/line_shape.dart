@@ -7,6 +7,7 @@ import 'package:myapp/domain/entities/shape.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:myapp/presentantion/providers/coordinate_provider.dart';
 import 'package:myapp/utils/indian_grid_converter.dart';
+import 'package:myapp/utils/util.dart';
 import 'package:provider/provider.dart';
 
 class LineShape extends Shape {
@@ -23,14 +24,7 @@ class LineShape extends Shape {
     );
   }
 
-   double calculateDistanceInMeters() {
-    if (points.length != 2) return 0;
-    return const Distance().as(
-      LengthUnit.Meter,
-      points[0],
-      points[1],
-    );
-  }
+ 
 
   @override
   Map<String, dynamic> getDetails(BuildContext context) {
@@ -41,14 +35,9 @@ class LineShape extends Shape {
 
     var details = {
       'type': 'Line',
-      // 'start':
-      //     '${points[0].latitude.toStringAsFixed(6)}, ${points[0].longitude.toStringAsFixed(6)}',
           
     };
-    // Add coordinates based on user preferences
-    // if (provider.showLatLong) {
       details['start_wgs84'] = '${points[0].latitude.toStringAsFixed(6)}, ${points[0].longitude.toStringAsFixed(6)}';
-    // }
 
     
    if (provider.showIndianGrid) {
@@ -59,7 +48,7 @@ class LineShape extends Shape {
       );
       
       if (startGridCoords != null) {
-        details['start_grid'] = 'E: ${startGridCoords.easting.toStringAsFixed(3)} m, N: ${startGridCoords.northing.toStringAsFixed(3)} m';
+        details['start_grid'] = 'E: ${startGridCoords.easting.toStringAsFixed(3)}m, N: ${startGridCoords.northing.toStringAsFixed(3)}m';
       }
     }
 
@@ -79,7 +68,7 @@ class LineShape extends Shape {
         }
       }
 
-      details['distance'] = '${calculateDistanceInMeters().toStringAsFixed(2)} m (${calculateDistance().toStringAsFixed(2)} km)';
+      details['distance'] = '${calculateDistanceInMeters(points[0], points[1]).toStringAsFixed(2)} m (${calculateDistance().toStringAsFixed(2)} km)';
     } else if (points.length == 1) {
       details['current_length'] = '${const Distance().as(
             LengthUnit.Kilometer,

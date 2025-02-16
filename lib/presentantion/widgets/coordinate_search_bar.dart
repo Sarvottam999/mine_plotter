@@ -76,6 +76,13 @@ class _CoordinateSearchState extends State<CoordinateSearch> {
           constraints: BoxConstraints(maxWidth: 400),
           width: screen_size.width * 0.8,
           child: Card(
+              shape: RoundedRectangleBorder(
+    side: BorderSide(color: Colors.black26),
+    borderRadius: BorderRadius.circular(12),
+  ),
+
+            
+            elevation: 0,
             color: Colors.white,
             margin: EdgeInsets.all(8),
             child: !searchProvider.isExpanded

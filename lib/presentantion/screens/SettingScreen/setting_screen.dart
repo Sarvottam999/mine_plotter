@@ -6,6 +6,7 @@ import 'package:myapp/presentantion/screens/SettingScreen/models/setting_tab.dar
 import 'package:myapp/presentantion/screens/SettingScreen/setting_detail_screen.dart';
 import 'package:myapp/presentantion/screens/SettingScreen/utils.dart';
 import 'package:myapp/presentantion/widgets/download_button.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 
 class SettingsPage extends StatefulWidget {
@@ -68,6 +69,18 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  Future<void> launchUrlSite() async {
+  const url = 'https://docs.google.com/forms/d/e/1FAIpQLSe6au-pLHmP-FSavePt8fkMzKGH58vdH3BYoK5hchs9IyTleg/viewform'; // Replace with your Google Form link
+
+  final Uri urlParsed = Uri.parse(url);
+
+  if (await canLaunchUrl(urlParsed)) {
+    await launchUrl(urlParsed, mode: LaunchMode.externalApplication);
+  } else {
+    throw 'Could not launch $url';
+  }
+}
+
   Widget _buildSettingsList(bool isTablet) {
  
     return Padding(
@@ -117,7 +130,12 @@ class _SettingsPageState extends State<SettingsPage> {
                           selectedTab = tab;
                         });
                       } else {
-                        Navigator.push(
+
+                        if (tab == setting_tabs[setting_tabs.length - 1])
+                        {
+                          launchUrlSite();
+                        }else{
+                            Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => SettingDetailPage(
@@ -126,6 +144,9 @@ class _SettingsPageState extends State<SettingsPage> {
                             ),
                           ),
                         );
+
+                        }
+                      
                       }
                     },
                   ),
