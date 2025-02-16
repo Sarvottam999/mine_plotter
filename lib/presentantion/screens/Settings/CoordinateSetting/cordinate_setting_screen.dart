@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:myapp/presentantion/providers/coordinate_provider.dart';
+import 'package:myapp/utils/contant.dart';
 import 'package:myapp/utils/indian_grid_converter.dart';
 import 'package:provider/provider.dart';
 
@@ -14,19 +15,19 @@ class SettingsScreen extends StatelessWidget {
         builder: (context, provider, _) {
           return ListView(
             children: [
+              // SwitchListTile(
+              //   activeTrackColor: Colors.black,
+              //   inactiveTrackColor: Colors.white,
+              //   activeColor: my_orange,
+              //   title: Text('Show Latitude/Longitude'),
+              //   subtitle: Text('Display coordinates in Lat/Long format'),
+              //   value: provider.showLatLong,
+              //   onChanged: (value) => provider.setShowLatLong(value),
+              // ),
               SwitchListTile(
                 activeTrackColor: Colors.black,
                 inactiveTrackColor: Colors.white,
-                activeColor: Colors.yellow,
-                title: Text('Show Latitude/Longitude'),
-                subtitle: Text('Display coordinates in Lat/Long format'),
-                value: provider.showLatLong,
-                onChanged: (value) => provider.setShowLatLong(value),
-              ),
-              SwitchListTile(
-                activeTrackColor: Colors.black,
-                inactiveTrackColor: Colors.white,
-                activeColor: Colors.yellow,
+                activeColor: my_orange,
                 title: Text('Show Indian Grid'),
                 subtitle: Text('Display coordinates in Indian Grid format'),
                 value: provider.showIndianGrid,

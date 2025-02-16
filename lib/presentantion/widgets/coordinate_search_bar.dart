@@ -74,7 +74,7 @@ class _CoordinateSearchState extends State<CoordinateSearch> {
         duration: Duration(milliseconds: 500),
         child: Container(
           constraints: BoxConstraints(maxWidth: 400),
-          width: screen_size.width * 0.4,
+          width: screen_size.width * 0.8,
           child: Card(
             color: Colors.white,
             margin: EdgeInsets.all(8),
@@ -89,8 +89,8 @@ class _CoordinateSearchState extends State<CoordinateSearch> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          // Search type toggle
-                          SegmentedButton<String>(
+                           SegmentedButton<String>(
+                            showSelectedIcon:false,
                             style: ButtonStyle(
                               iconColor: WidgetStateProperty.resolveWith<Color>(
                                 (Set<WidgetState> states) {
@@ -202,7 +202,7 @@ class _CoordinateSearchState extends State<CoordinateSearch> {
                                 return null;
                               },
                             ),
-                             OutlineFilledButton(
+                             NButtonOutline(
                             label: 'Search',
                             // icon: Icons.add,  // Optional icon
                             isSelected: true,
@@ -264,29 +264,15 @@ class _CoordinateSearchState extends State<CoordinateSearch> {
                                 return null;
                               },
                             ),
-                              OutlineFilledButton(
+                              NButtonOutline(
                             label: 'Search',
                             // icon: Icons.add,  // Optional icon
                             isSelected: true,
                             color: Colors.black, // Optional custom color
                             onPressed: _searchLocation,
                           ),
-
                           ],
                           SizedBox(height: 16),
-                          // ElevatedButton(
-                          //   onPressed: _searchLocation,
-                          //   child: Text('Search Location'),
-                          // ),
-
-                          //  NIconButton(
-                          //       icon: Icon(Icons.expand_less_outlined),
-                          //       onPressed: (){
-                          //       searchProvider.toggleExpanded();
-
-                          //     })
-
-                        
                           GestureDetector(
                             onTap: () {
                               searchProvider.toggleExpanded();

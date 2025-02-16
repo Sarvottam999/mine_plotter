@@ -14,8 +14,6 @@ Widget build(BuildContext context) {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-           
-          
              AspectRatio(
               aspectRatio: 16 / 9,
                child: SvgPicture.string(

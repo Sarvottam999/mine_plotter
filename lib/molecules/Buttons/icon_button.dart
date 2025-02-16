@@ -34,7 +34,6 @@ class NIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: size,
-      // width: size,
       decoration: BoxDecoration(
         shape: BoxShape.rectangle,
         borderRadius: BorderRadius.circular(borderRadius),

@@ -77,7 +77,6 @@ class _LayerSelectorState extends State<LayerSelector> {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
-
       children: [
         Container(
           padding: EdgeInsets.symmetric(horizontal: 3),
@@ -92,7 +91,6 @@ class _LayerSelectorState extends State<LayerSelector> {
               ),
             ],
           ),
-          // width: 50,
           child: Row(
             children: [
               if (showAllLayers) 
@@ -137,10 +135,10 @@ class _LayerSelectorState extends State<LayerSelector> {
               
         decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(10),
-      border: Border.all( color:   Colors.black, width: 3),
+      border: Border.all( color:   Colors.orange, width: 3),
       boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.orange.withOpacity(0.1),
               blurRadius: 4,
               offset: const Offset(0, 2),
           ),

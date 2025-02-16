@@ -6,6 +6,9 @@ import 'package:flutter_map_dragmarker/src/drag_marker.dart';
 import 'package:myapp/core/enum/shape_type.dart';
 import 'package:myapp/domain/entities/shape.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:myapp/presentantion/providers/coordinate_provider.dart';
+import 'package:myapp/utils/indian_grid_converter.dart';
+import 'package:provider/provider.dart';
 // import 'package:flutter_map/flutter_map.dart';
 
 class CircleShape extends Shape {
@@ -44,12 +47,25 @@ class CircleShape extends Shape {
   @override
   Map<String, dynamic> getDetails(BuildContext context) {
     if (points.isEmpty) return {'type': 'Circle'};
+        final provider = context.read<CoordinateProvider>();
 
     var details = {
       'type': 'Circle',
       'center':
           '${points[0].latitude.toStringAsFixed(6)}, ${points[0].longitude.toStringAsFixed(6)}',
     };
+
+     if (provider.showIndianGrid) {
+      final startGridCoords = IndianGridConverter.latLongToGrid(
+        provider.selectedZone,
+        points[0].latitude,
+        points[0].longitude,
+      );
+      
+      if (startGridCoords != null) {
+        details['start_grid'] = 'E: ${startGridCoords.easting.toStringAsFixed(3)} m, N: ${startGridCoords.northing.toStringAsFixed(3)} m';
+      }
+    }
 
     if (points.length > 1) {
       final radius = calculateDistance();

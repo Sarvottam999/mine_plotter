@@ -2,8 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:myapp/error_widgets/no_content_view.dart';
-import 'package:myapp/presentantion/providers/dowanload_provider.dart';
+ import 'package:myapp/presentantion/providers/dowanload_provider.dart';
 import 'package:myapp/presentantion/screens/MarkAreaScreen/mark_area_screen.dart';
 import 'package:myapp/presentantion/screens/MarkAreaScreen/models/downloaded_map.dart';
 import 'package:myapp/presentantion/screens/map_preview_screen.dart';

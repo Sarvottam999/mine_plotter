@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:myapp/core/enum/fishbone_type.dart';
+import 'package:myapp/utils/contant.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -122,7 +123,9 @@ class ShapeDetailsPanel extends StatelessWidget {
                     return Container(
                       margin: EdgeInsets.symmetric(vertical: 8),
                       decoration: BoxDecoration(
-                          color: Colors.grey[100],
+                            border: Border.all(color: my_orange, width: 2), // Border color & thickness
+
+                          color: my_orange_light,
                           borderRadius: BorderRadius.circular(12)),
                       child: InkWell(
                         onTap: () => _focusOnShape(shape),

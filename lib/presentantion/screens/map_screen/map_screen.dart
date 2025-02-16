@@ -348,12 +348,8 @@ class _MapScreenState extends State<MapScreen> {
 
 //                       ],
 //                     ),
-
               ]),
 
-          
-
- 
           Positioned(
             top: MediaQuery.of(context).padding.top + 10,
             left: 0,
@@ -366,99 +362,96 @@ class _MapScreenState extends State<MapScreen> {
           ),
 
           // -------------------  right bottom button --------------
-          Positioned(
-            right: 10,
-            // top: 0,
-            bottom: screenSize.height * 0.25,
-            child: SelectionButton(
-              mapController: _mapController,
-            ), // Add this line
-          ),
-
 
           Positioned(
+            bottom: screenSize.height * 0.3,
             right: 10,
-            bottom: screenSize.height * 0.19,
-            child: Center(
-              child: CurrentLocationLayer(
-                mapController: _mapController,
-                onLocationMarked: (location) {
-                  final provider =
-                      Provider.of<DrawingProvider>(context, listen: false);
-                  provider.addMarker(location);
-                },
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              spacing: 6,
+              children: [
+                SelectionButton(
+                  mapController: _mapController,
+                ),
+
+                Center(
+                  child: CurrentLocationLayer(
+                    mapController: _mapController,
+                    onLocationMarked: (location) {
+                      final provider = Provider.of<DrawingProvider>(context,
+                          listen: false);
+                      provider.addMarker(location);
+                    },
+                  ),
+                ),
+                // **************   new  *****************
+                Center(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          spreadRadius: 1,
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(5),
+                      child: Column(
+                        children: SidePanelbuttonIcon.entries.map((entry) {
+                          OptsButtonType button = entry.key;
+                          // Widget label = entry.value;
+                          return NIconButton(
+                            backgroundColor:
+                                _currentSelectedButton == entry.key
+                                    ? Colors.black
+                                    : Colors.white,
+                            icon: Icon(entry.value,
+                                color: _currentSelectedButton == entry.key
+                                    ? Colors.white
+                                    : Colors.black),
+                            onPressed: () {
+                              if (button == OptsButtonType.setting) {
+                                setState(() {
+                                  _currentSelectedButton =
+                                      OptsButtonType.none;
+                                });
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => SettingsPage()),
+                                );
+                              }
+                
+                              // } else {
+                              setState(() {
+                                _currentSelectedButton =
+                                    (_currentSelectedButton == button)
+                                        ? OptsButtonType.none
+                                        : button;
+                              });
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
 
 // ###############################################################################
-          // **************   new  *****************
-          Positioned(
-              top: MediaQuery.of(context).padding.top + 10,
-              right: 10,
-              //  bottom: 0,
-              child: Center(
-                //  Can are here to help.
-
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        spreadRadius: 1,
-                        blurRadius: 10,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(5),
-                    child: Column(
-                      children: SidePanelbuttonIcon.entries.map((entry) {
-                        OptsButtonType button = entry.key;
-                        // Widget label = entry.value;
-                        return NIconButton(
-                          backgroundColor: _currentSelectedButton == entry.key
-                              ? Colors.black
-                              : Colors.white,
-                          icon: Icon(entry.value,
-                              color: _currentSelectedButton == entry.key
-                                  ? Colors.white
-                                  : Colors.black),
-                          onPressed: () {
-                            if (button == OptsButtonType.setting) {
-                              setState(() {
-                                _currentSelectedButton = OptsButtonType.none;
-                              });
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => SettingsPage()),
-                              );
-                            }
-
-                            // } else {
-                            setState(() {
-                              _currentSelectedButton =
-                                  (_currentSelectedButton == button)
-                                      ? OptsButtonType.none
-                                      : button;
-                            });
-                          },
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ),
-              )),
 
           // *****************  content s *********************
           if (_currentSelectedButton == OptsButtonType.mapElementDetailed)
             Positioned(
               right: sidePaneSize,
-              top: screenSize.height * 0.1,
+              top: screenSize.height * 0.15,
               bottom: screenSize.height * 0.2,
               child: AnimatedSize(
                 duration: const Duration(milliseconds: 300),
@@ -478,7 +471,7 @@ class _MapScreenState extends State<MapScreen> {
           if (_currentSelectedButton == OptsButtonType.downloadedMaps)
             Positioned(
               right: sidePaneSize,
-              top: screenSize.height * 0.1,
+              top: screenSize.height * 0.15,
               bottom: screenSize.height * 0.2,
               child: AnimatedSize(
                 duration: const Duration(milliseconds: 300),

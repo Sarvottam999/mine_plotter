@@ -46,9 +46,9 @@ class LineShape extends Shape {
           
     };
     // Add coordinates based on user preferences
-    if (provider.showLatLong) {
+    // if (provider.showLatLong) {
       details['start_wgs84'] = '${points[0].latitude.toStringAsFixed(6)}, ${points[0].longitude.toStringAsFixed(6)}';
-    }
+    // }
 
     
    if (provider.showIndianGrid) {

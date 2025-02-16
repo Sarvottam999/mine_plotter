@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/molecules/Buttons/outline_filled_button.dart';
 import 'package:myapp/presentantion/screens/SettingScreen/models/stored_location.dart';
 import 'package:myapp/utils/indian_grid_converter.dart';
 
@@ -196,13 +197,24 @@ class _LocationAddFormState extends State<LocationAddForm> {
             children: [
               TextButton(
                 onPressed: widget.onCancel,
-                child: Text('Cancel'),
+                child: Text('Cancel', style: TextStyle(
+                  color: Colors.black
+                ),),
               ),
               SizedBox(width: 8),
-              ElevatedButton(
-                onPressed: _handleSave,
-                child: Text('Save'),
-              ),
+               NButtonOutline(
+                            label: 'Save',
+                            // icon: Icons.add,  // Optional icon
+                            isSelected: true,
+                            color: Colors.black, // Optional custom color
+                            onPressed: _handleSave,
+                          ),
+
+              
+              // ElevatedButton(
+              //   onPressed: _handleSave,
+              //   child: Text('Save'),
+              // ),
             ],
           ),
         ],

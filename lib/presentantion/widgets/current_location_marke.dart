@@ -1,7 +1,6 @@
 // these is correct code
 
 
-// current_location_marker.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
@@ -27,7 +26,6 @@ class _CurrentLocationLayerState extends State<CurrentLocationLayer> {
   bool _isLoading = false;
 
   Future<void> _getCurrentLocation() async {
-    print("--------------1 ");
     setState(() => _isLoading = true);
     
     try {
@@ -35,21 +33,16 @@ class _CurrentLocationLayerState extends State<CurrentLocationLayer> {
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
-    print("--------------2 ${permission} ");
 
         if (permission == LocationPermission.denied) {
           throw 'Location permissions are denied';
         }
       }
-    print("--------------3 ");
 
 
-      // Get current position
       Position position = await Geolocator.getCurrentPosition(
 
-        // desiredAccuracy: LocationAccuracy.high,
       );
-    print("--------------4 ");
 
 
 print("position ===> ${position}");
@@ -67,7 +60,6 @@ print("position ===> ${position}");
       widget.onLocationMarked(_currentLocation!);
 
     } catch (e) {
-      print("errorr =======================");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error getting location: $e')),
       );
@@ -79,6 +71,7 @@ print("position ===> ${position}");
   @override
   Widget build(BuildContext context) {
     return NIconButton(
+
       // heroTag: 'getCurrentLocation',
       onPressed: () {
         

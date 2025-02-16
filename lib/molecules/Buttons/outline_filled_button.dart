@@ -2,14 +2,14 @@
 
 import 'package:flutter/material.dart';
 
-class OutlineFilledButton extends StatefulWidget {
+class NButtonOutline extends StatefulWidget {
   final String label;
   final IconData? icon;
   final VoidCallback onPressed;
   final bool isSelected;
   final Color color;
 
-  const OutlineFilledButton({
+  const NButtonOutline({
     Key? key,
     required this.label,
     this.icon,
@@ -19,10 +19,10 @@ class OutlineFilledButton extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<OutlineFilledButton> createState() => _OutlineFilledButtonState();
+  State<NButtonOutline> createState() => _NButtonOutlineState();
 }
 
-class _OutlineFilledButtonState extends State<OutlineFilledButton> {
+class _NButtonOutlineState extends State<NButtonOutline> {
   @override
   Widget build(BuildContext context) {
     return Container(

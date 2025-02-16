@@ -28,7 +28,7 @@ class DraggableCoordinateMarker extends StatelessWidget {
             // Coordinate Display
             Positioned(
 
-              top: 10,
+              bottom: 10,
               left: 0,
               right: 0,
               child: Center(

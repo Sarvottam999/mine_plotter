@@ -32,21 +32,31 @@ class CollapsedSearchView extends StatelessWidget {
         child: Padding(
         padding: EdgeInsets.all(5),
           child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.search,
-                color: Colors.grey[600],
-              ),
-              SizedBox(width: 12),
-              Flexible(
-                child: Text(
-                  'Search coordinates...',overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 16,
-                  ),
+
+              Row(
+            mainAxisSize: MainAxisSize.min,
+
+                children: [
+                   Icon(
+              Icons.search,
+              color: Colors.grey[600],
+                            ),
+                            SizedBox(width: 12),
+                            Flexible(
+              child: Text(
+                'Search coordinates...',
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 16,
                 ),
               ),
+                            ),
+                  
+                ],
+              ),
+             
               Spacer(),
               Icon(
                 Icons.expand_more,

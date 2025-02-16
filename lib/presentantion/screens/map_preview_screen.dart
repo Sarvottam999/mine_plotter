@@ -21,14 +21,12 @@ class MapPreviewScreen extends StatefulWidget {
 class _MapPreviewScreenState extends State<MapPreviewScreen> {
   final MapController mapController = MapController();
 
-   // Existing properties
+  // Existing properties
   double zoomLevel = 0;
 
   void setZoomLevel(double zoom) {
     setState(() {
-    zoomLevel = zoom;
-
-      
+      zoomLevel = zoom;
     });
   }
 
@@ -39,95 +37,73 @@ class _MapPreviewScreenState extends State<MapPreviewScreen> {
   //   notifyListeners();
   // }
 
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-     // Ensure the MapController is used only after the widget is rendered.
+    // Ensure the MapController is used only after the widget is rendered.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       goToMapArea(widget.map, mapController);
     });
-    
   }
+
   @override
   Widget build(BuildContext context) => Scaffold(
-    body: SizedBox(
-           height: MediaQuery.of(context).size.height,
-           width: MediaQuery.of(context).size.width,
-           child: Stack(
-             children: [
-               FlutterMap(
+        body: SizedBox(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: Stack(
+            children: [
+              FlutterMap(
                 mapController: mapController,
-                 options: MapOptions(
-                   onMapEvent: (event) {
-              setZoomLevel(event.camera.zoom); // Update zoom level in provider
-          },
-                  
+                options: MapOptions(
+                  onMapEvent: (event) {
+                    setZoomLevel(
+                        event.camera.zoom); // Update zoom level in provider
+                  },
+
                   //  initialCenter: LatLng(
                   //    (widget.map.northEast.latitude + widget.map.southWest.latitude) / 2,
                   //    (widget.map.northEast.longitude + widget.map.southWest.longitude) / 2,
                   //  ),
-                 ),
-                 children: [
-                    Consumer<MapProvider>(
-                          builder: (context, provider, _) => TileLayer(
-                                urlTemplate:
-                                    provider.previewMapPath,
-                                tileProvider:  SafeFileTileProvider() ,
-                                // subdomains: provider.currentTilePath != null
-                                //     ? []
-                                //     : currentMapLayer.subdomains,
-                                // errorImage:
-                                //     const AssetImage('assets/placeholder_tile.png'),
-                              )
-               
-                          // TileLayer(
-                          //   urlTemplate:
-                          //       provider.currentTilePath ?? currentMapLayer.url,
-                          //   tileProvider: provider.currentTilePath != null
-                          //       ? FileTileProvider()
-                          //       : NetworkTileProvider(),
-                          //   subdomains: provider.currentTilePath != null
-                          //       ? []
-                          //       : currentMapLayer.subdomains,
-                          // ),
-                          ),
-                  
-                 ],
-                 
-               ),
-             
-             
-             Positioned(
-    top: 10,
-    right: 10,
-    child: Consumer<MapProvider>(
-      builder: (context, provider, child) => Container(
-        padding: const EdgeInsets.all(8.0),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8.0),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 4.0,
-              offset: Offset(0, 2),
-            ),
-          ],
+                ),
+                children: [
+                  Consumer<MapProvider>(
+                      builder: (context, provider, _) => TileLayer(
+                            urlTemplate: provider.previewMapPath,
+                            tileProvider: SafeFileTileProvider(),
+                           )
+
+                    
+                      ),
+                ],
+              ),
+              Positioned(
+                top: 10,
+                right: 10,
+                child: Consumer<MapProvider>(
+                  builder: (context, provider, child) => Container(
+                    padding: const EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 4.0,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      'Zoom: ${mapController.camera.zoom.toStringAsFixed(2)}',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-        child: Text(
-          'Zoom: ${mapController.camera.zoom.toStringAsFixed(2)}',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-      ),
-    ),
-    ),
-    
-             
-             ],
-           ),
-         ),
-  );
+      );
 }
- 
