@@ -108,7 +108,7 @@ class ShapeDetailsPanel extends StatelessWidget {
             child: Consumer<DrawingProvider>(
               builder: (context, provider, _) {
                 if (provider.shapes.isEmpty) {
-                  return NoContentView(text: 'You did not add any elements to the map!!',);
+                  return NoContentView(text: 'Empty list!', sub_text : "You did not add any elements to the map.");
                   // return Center(
                   //   child: Padding(
                   //     padding: EdgeInsets.all(16.0),

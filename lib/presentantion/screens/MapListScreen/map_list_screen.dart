@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
- import 'package:myapp/presentantion/providers/dowanload_provider.dart';
+import 'package:myapp/presentantion/providers/dowanload_provider.dart';
 import 'package:myapp/presentantion/screens/MarkAreaScreen/mark_area_screen.dart';
 import 'package:myapp/presentantion/screens/MarkAreaScreen/models/downloaded_map.dart';
 import 'package:myapp/presentantion/screens/map_preview_screen.dart';
@@ -29,16 +29,16 @@ class _MapListScreenState extends State<MapListScreen> {
 
   @override
   Widget build(BuildContext context) {
-        final screen_size = MediaQuery.of(context).size;
-        final double screenWidth = screen_size.width;
+    final screen_size = MediaQuery.of(context).size;
+    final double screenWidth = screen_size.width;
 
     final isTablet = screenWidth > 600;
-        int crossAxisCount = screenWidth > 600 ? 2 : 2; // 3 columns for tablets, 2 for mobile
-
+    int crossAxisCount =
+        screenWidth > 600 ? 2 : 2; // 3 columns for tablets, 2 for mobile
 
     return Scaffold(
       backgroundColor: Colors.white,
-    
+
       body: Consumer<MapProvider>(
         builder: (context, mapProvider, child) {
           return SingleChildScrollView(
@@ -54,54 +54,46 @@ class _MapListScreenState extends State<MapListScreen> {
                         Text(mapProvider.currentStatus),
                       ],
                     ),
-                  ), 
-            
-                  // ====================  list =============================
-                   Container(
-                    height: screen_size.height * 0.7,
-                     child: mapProvider.downloadedMaps.length == 0 ? 
-                     Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child:  NoContentView(
-            text: 'No offline maps are downloaded!!',
-                    ),
-                        // child: AspectRatio(
-                        //         aspectRatio: 16 / 9,
-                        //   child: Image.asset(
-                        //     'assets/nothing_found.png',
-                        //     width: double.infinity,
-                        //   ),
-                        // ),
-                      ),
-                    )
-                     
-                     
-                     : GridView.builder(
-                      
-                     
-                      
-                                  gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(
-    crossAxisCount: 2, 
-                                    
-                                      // maxCrossAxisExtent: 200,
-                                      
-                childAspectRatio: 0.7,
-                mainAxisSpacing: 20,
-                crossAxisSpacing: 16,
-                
+                  ),
+
+                // ====================  list =============================
+                Container(
+                  height: screen_size.height * 0.7,
+                  child: mapProvider.downloadedMaps.length == 0
+                      ? Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: NoContentView(
+                              text: 'No offline maps are downloaded!!',
+                            ),
+                          ),
+                        )
+                      : GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+
+                            // maxCrossAxisExtent: 200,
+
+                            childAspectRatio: 0.7,
+                            mainAxisSpacing: 20,
+                            crossAxisSpacing: 16,
+
                             //  crossAxisCount: crossAxisCount,
                             //  crossAxisSpacing: 10,
                             //  mainAxisSpacing: 10,
                             //  childAspectRatio:4.2/6, // Adjust aspect ratio if needed
-                                  ),
-                                  padding: const EdgeInsets.all(10),
-                                  itemCount: mapProvider.downloadedMaps.length,
-                                  itemBuilder: (context, index) {
-                             return MapListItem(map: mapProvider.downloadedMaps[index], index: index,);
-                                  },
-                                ),
-                   ),
+                          ),
+                          padding: const EdgeInsets.all(10),
+                          itemCount: mapProvider.downloadedMaps.length,
+                          itemBuilder: (context, index) {
+                            return MapListItem(
+                              map: mapProvider.downloadedMaps[index],
+                              index: index,
+                            );
+                          },
+                        ),
+                ),
                 // SizedBox(
                 //   height: screenSize.height * 0.7,
                 //   width: screenSize.width,
@@ -153,12 +145,9 @@ class MapListItem extends StatelessWidget {
         return FutureBuilder(
             future: getPreviewImage(map.id),
             builder: (context, snapshot) {
-
               return Container(
                 margin: EdgeInsets.symmetric(vertical: 5.h),
-                child: 
-                
-                ProductCard2(
+                child: ProductCard2(
                   onMapSelect: () {
                     context.read<MapProvider>().setPreviewMap(map.id);
                     Navigator.push(
@@ -169,14 +158,13 @@ class MapListItem extends StatelessWidget {
                         ),
                       ),
                     );
-
-                   },
+                  },
                   onPressed: () {
                     Provider.of<MapProvider>(context, listen: false)
                         .deleteMap(index);
                   },
                   fileImage: snapshot.hasData ? snapshot.data! : null,
-                   name: map.name,
+                  name: map.name,
                   time: formatDateTime(map.date),
                   northEast:
                       ' Lat : ${map.northEast.latitude.toStringAsFixed(2)} | Lag : ${map.northEast.longitude.toStringAsFixed(2)}',
@@ -185,9 +173,6 @@ class MapListItem extends StatelessWidget {
                   areaSqKm: '${map.areaSqKm.toStringAsFixed(2)} km²',
                   // latitude: '37.7749° N',
                 ),
-              
-              
-              
               );
             });
       },

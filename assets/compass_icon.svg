@@ -1,0 +1,9 @@
+<svg width="441" height="906" viewBox="0 0 441 906" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M220.5 0L411.459 453H29.5414L220.5 0Z" fill="#A50404"/>
+<path d="M219.829 0.5V454H32.5L219.829 0.5Z" fill="#DD2727"/>
+<g opacity="0.8">
+<path d="M220.5 906L29.5414 453L411.459 453L220.5 906Z" fill="#969696"/>
+<path d="M221.171 905.5L221.171 452H408.5L221.171 905.5Z" fill="#C8C8C8"/>
+</g>
+<circle cx="221.5" cy="451.5" r="80.5" fill="white"/>
+</svg>

@@ -53,6 +53,7 @@ dependencies:
   flutter_map_line_editor: ^8.0.0
   flutter_native_splash: ^2.4.4
   url_launcher: ^6.3.1
+  flutter_compass: ^0.8.1
   # flutter_map_marker_popup: ^8.0.0 # Upgrade to 8.0.0
 
   
@@ -88,6 +89,7 @@ flutter:
     - assets/images/layer_icons/
     - assets/map_pin.svg
     - assets/app_icon/icon_in.svg
+    - assets/app_icon/app_icon.svg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

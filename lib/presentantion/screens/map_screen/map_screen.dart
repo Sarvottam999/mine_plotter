@@ -19,6 +19,7 @@ import 'package:myapp/presentantion/providers/drawing_provider.dart';
 import 'package:myapp/presentantion/screens/SettingScreen/setting_screen.dart';
 import 'package:myapp/presentantion/screens/map_screen/utils.dart';
 import 'package:myapp/presentantion/widgets/ShowMyLocationButton.dart';
+import 'package:myapp/presentantion/widgets/compass_button.dart';
 import 'package:myapp/presentantion/widgets/coordinate_popup.dart';
 import 'package:myapp/presentantion/widgets/coordinate_search_bar.dart';
 import 'package:myapp/presentantion/widgets/current_location_marke.dart';
@@ -362,6 +363,16 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ),
           ),
+          Positioned(
+            top: screenSize.height * 0.13,
+            right: 10,
+   child: CompassButton(
+     onPressed: () {
+       // Handle compass button click if needed
+     },
+   ),
+),
+
 
           // -------------------  right bottom button --------------
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class CollapsedSearchView extends StatelessWidget {
   final VoidCallback onTap;
@@ -34,10 +35,7 @@ class CollapsedSearchView extends StatelessWidget {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.search,
-                    color: Colors.grey[600],
-                  ),
+                  SvgPicture.asset('assets/app_icon/app_icon.svg', height: 30, width: 30,),
                   SizedBox(width: 12),
                   Flexible(
                     child: Text(
