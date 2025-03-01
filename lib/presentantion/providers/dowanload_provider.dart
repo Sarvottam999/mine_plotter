@@ -45,7 +45,6 @@ void setPreviewMap(String? id)  async{
 
 
 Future<void> loadOfflineMap(DownloadedMap? map) async {
-  print("loading function ==================");
   if (map == null) {
     currentTilePath = null;
 
@@ -71,7 +70,6 @@ Future<void> loadOfflineMap(DownloadedMap? map) async {
    if (entity is Directory) {
      final metadataFile = File('${entity.path}/metadata.json');
      if (await metadataFile.exists()) {
-      print("meta file exits ==================");
        final metadata = jsonDecode(await metadataFile.readAsString());
        maps.add(DownloadedMap(
         id:metadata['id'] ?? 0 ,
@@ -96,8 +94,6 @@ Future<void> deleteMap(int index) async {
  final map = downloadedMaps[index];
  final directory = await getExternalStorageDirectory();
  final mapDir = Directory('${directory!.path}/offline_maps/${map.id}');
- print("============================");
- print(map);
  
  await mapDir.delete(recursive: true); // Delete folder and contents
  downloadedMaps.removeAt(index);       // Remove from list

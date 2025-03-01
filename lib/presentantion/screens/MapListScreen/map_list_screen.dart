@@ -23,7 +23,6 @@ class MapListScreen extends StatefulWidget {
 class _MapListScreenState extends State<MapListScreen> {
   @override
   void setState(VoidCallback fn) {
-    // TODO: implement setState
     super.setState(fn);
   }
 
@@ -34,8 +33,7 @@ class _MapListScreenState extends State<MapListScreen> {
 
     final isTablet = screenWidth > 600;
     int crossAxisCount =
-        screenWidth > 600 ? 2 : 2; // 3 columns for tablets, 2 for mobile
-
+        screenWidth > 600 ? 2 : 2; 
     return Scaffold(
       backgroundColor: Colors.white,
 
@@ -72,17 +70,9 @@ class _MapListScreenState extends State<MapListScreen> {
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
-
-                            // maxCrossAxisExtent: 200,
-
                             childAspectRatio: 0.7,
                             mainAxisSpacing: 20,
                             crossAxisSpacing: 16,
-
-                            //  crossAxisCount: crossAxisCount,
-                            //  crossAxisSpacing: 10,
-                            //  mainAxisSpacing: 10,
-                            //  childAspectRatio:4.2/6, // Adjust aspect ratio if needed
                           ),
                           padding: const EdgeInsets.all(10),
                           itemCount: mapProvider.downloadedMaps.length,
@@ -94,17 +84,6 @@ class _MapListScreenState extends State<MapListScreen> {
                           },
                         ),
                 ),
-                // SizedBox(
-                //   height: screenSize.height * 0.7,
-                //   width: screenSize.width,
-                //   child: mapProvider.downloadedMaps.length > 0
-                //       ? ListView.builder(
-                //           itemCount: mapProvider.downloadedMaps.length,
-                //           itemBuilder: (context, index) =>
-                //               MapListItem(index: index),
-                //         )
-                //       : EmptyNotificationsScreen(),
-                // ),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 28.0),
                   child: NDownloadButton(
@@ -127,7 +106,6 @@ class _MapListScreenState extends State<MapListScreen> {
           );
         },
       ),
-      // floatingActionButton:
     );
   }
 }
@@ -169,9 +147,8 @@ class MapListItem extends StatelessWidget {
                   northEast:
                       ' Lat : ${map.northEast.latitude.toStringAsFixed(2)} | Lag : ${map.northEast.longitude.toStringAsFixed(2)}',
                   southWest:
-                      'Lat : ${map.northEast.latitude.toStringAsFixed(2)} | Lag : ${map.northEast.longitude.toStringAsFixed(2)}',
+                      'Lat : ${map.southWest.latitude.toStringAsFixed(2)} | Lag : ${map.southWest.longitude.toStringAsFixed(2)}',
                   areaSqKm: '${map.areaSqKm.toStringAsFixed(2)} km²',
-                  // latitude: '37.7749° N',
                 ),
               );
             });

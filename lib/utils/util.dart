@@ -27,8 +27,6 @@ String formatDateTime(String isoDate) {
 Future<File> getPreviewImage(String mapName) async {
   final directory = await getExternalStorageDirectory();
   final mapDir = Directory('${directory!.path}/offline_maps/$mapName');
-  print('directory  ===> ${mapDir}');
-  print('mapName  ===> ${mapName}');
 
   File? previewFile;
   await for (var entity in mapDir.list(recursive: true)) {

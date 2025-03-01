@@ -36,8 +36,6 @@ void initState() {
   Widget build(BuildContext context) {
     return Consumer<DrawingProvider>(
       builder: (context, provider, _) {
-        print("------------------");
-        print(provider.selectedShape);
         if (!provider.isEditing || provider.selectedShape == null) {
           return   Container();
         }
@@ -92,7 +90,7 @@ void initState() {
             DragMarkers(markers: _polyEditor.edit(),),
             Positioned(
                left: 0,
-                  top: 80,
+                  top: 130,
                   right: 0,
               child: Center(
                 child: Container(

@@ -70,7 +70,6 @@ void toggleMarkerMode() {
   }
   //  void addMarker(LatLng position) {
   //   _markers.add(position);
-  //   print((" added marker ======= ${_markers}"));
     
   //   _isAddingMarker = false;
   //   _currentShape= ShapeType.none;
@@ -346,6 +345,7 @@ void redo() {
   }
 
   void updateShapePoints(List<LatLng> newPoints) {
+    print('#############      Updated shape detail ====> ${newPoints}');
     if (_selectedShape != null) {
       int index = _shapes.indexOf(_selectedShape!);
       if (index != -1) {

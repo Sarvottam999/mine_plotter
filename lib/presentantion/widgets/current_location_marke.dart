@@ -45,7 +45,6 @@ class _CurrentLocationLayerState extends State<CurrentLocationLayer> {
       );
 
 
-print("position ===> ${position}");
       setState(() {
         _currentLocation = LatLng(position.latitude, position.longitude);
       });

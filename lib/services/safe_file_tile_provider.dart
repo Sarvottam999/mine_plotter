@@ -11,7 +11,6 @@ class SafeFileTileProvider extends TileProvider {
          .replaceAll(' ', '_')
          .replaceAll(',', '_');
 
-    print("tilePath ==>${tilePath}");
      
      final file = File(tilePath);
      if (!file.existsSync()) {

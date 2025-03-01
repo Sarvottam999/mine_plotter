@@ -61,44 +61,44 @@ class _MapScreenState extends State<MapScreen> {
 
   // final PopupController _popupLayerController = PopupController();
 
-  void _handleShapeSelection(DrawingProvider provider, LatLng clickPoint) {
-    Shape? selectedShape;
-    double minDistance = 100; // threshold in meters
+  // void _handleShapeSelection(DrawingProvider provider, LatLng clickPoint) {
+  //   Shape? selectedShape;
+  //   double minDistance = 100; // threshold in meters
 
-    // Check each shape
-    for (var shape in provider.shapes) {
-      // Get all polylines for this shape
-      List<Polyline> polylines = shape.getPolylines();
+  //   // Check each shape
+  //   for (var shape in provider.shapes) {
+  //     // Get all polylines for this shape
+  //     List<Polyline> polylines = shape.getPolylines();
 
-      // Check each polyline in the shape
-      for (var polyline in polylines) {
-        // Check each segment in the polyline
-        for (int i = 0; i < polyline.points.length - 1; i++) {
-          LatLng start = polyline.points[i];
-          LatLng end = polyline.points[i + 1];
+  //     // Check each polyline in the shape
+  //     for (var polyline in polylines) {
+  //       // Check each segment in the polyline
+  //       for (int i = 0; i < polyline.points.length - 1; i++) {
+  //         LatLng start = polyline.points[i];
+  //         LatLng end = polyline.points[i + 1];
 
-          // Calculate distance from click to line segment
-          double distance = distanceToLineSegment(clickPoint, start, end);
+  //         // Calculate distance from click to line segment
+  //         double distance = distanceToLineSegment(clickPoint, start, end);
 
-          if (distance < minDistance) {
-            minDistance = distance;
-            selectedShape = shape;
-          }
-        }
-      }
-    }
+  //         if (distance < minDistance) {
+  //           minDistance = distance;
+  //           selectedShape = shape;
+  //         }
+  //       }
+  //     }
+  //   }
 
-    // If we found a shape close enough to the click
-    if (selectedShape != null) {
-      // Toggle selection if clicking the same shape
+  //   // If we found a shape close enough to the click
+  //   if (selectedShape != null) {
+  //     // Toggle selection if clicking the same shape
 
-      provider.selectShape(
-          selectedShape == provider.selectedShape ? null : selectedShape);
-    } else {
-      // Deselect if clicked away from shapes
-      provider.selectShape(null);
-    }
-  }
+  //     provider.selectShape(
+  //         selectedShape == provider.selectedShape ? null : selectedShape);
+  //   } else {
+  //     // Deselect if clicked away from shapes
+  //     provider.selectShape(null);
+  //   }
+  // }
 
   @override
   void initState() {
@@ -108,11 +108,9 @@ class _MapScreenState extends State<MapScreen> {
         pointIcon: const Icon(Icons.adjust, color: Colors.red),
         pointIconSize: const Size(30, 30),
         callbackRefresh: (point) {
-          print("*********************${point}");
         }
 
         // setState(() {
-        //   print("###########");
         //   // selectedPoints = selectedPoints;
         // }),
 
@@ -134,11 +132,9 @@ class _MapScreenState extends State<MapScreen> {
         pointIcon: const Icon(Icons.adjust, color: Colors.red),
         pointIconSize: const Size(30, 30),
         callbackRefresh: (point) {
-          print("*********************${point}");
         }
 
         // setState(() {
-        //   print("###########");
         //   // selectedPoints = selectedPoints;
         // }),
 
@@ -156,7 +152,6 @@ class _MapScreenState extends State<MapScreen> {
                       Provider.of<DrawingProvider>(context, listen: false);
                   if (provider.currentShape == ShapeType.point) {
                     provider.addMarker(point);
-                    // print('addedd dddddddddddddddddddddd ${provider.markers}');
                     // setState(() {
                     // selectedMarkerPoints.add(point);
                     // });
@@ -170,7 +165,6 @@ class _MapScreenState extends State<MapScreen> {
                   else if (provider.currentShape != ShapeType.none) {
                     provider.addPoint(point);
                   } else {
-                    print("clicked.......");
                     Positioned(
                       bottom: 1,
                       right: 0,
@@ -186,17 +180,14 @@ class _MapScreenState extends State<MapScreen> {
                 //   }
                 // },
                 onPointerHover: (event, point) {
-                  print("event==========>${event}");
 
                   final provider = context.read<DrawingProvider>();
                   if (provider.currentShape != ShapeType.none) {
                     provider.updateCursor(point);
                   }
 
-                  print("point==========>${point}");
                 },
                 onMapReady: () {
-                  print("=============     called   =========");
                   setState(() {
                     _isMapReady = true;
                   });
@@ -282,7 +273,6 @@ class _MapScreenState extends State<MapScreen> {
                 //     height: 30,
                 //     child: GestureDetector(
                 //       onTap: () {
-                //         print('---------------');
                 //         _popupLayerController.togglePopup(Marker(point: dragMarker.point, child: Icon(Icons.access_time_filled_sharp)));
                 //       },
                 //       child: const Icon(Icons.location_on, color: Colors.red, size: 30),
@@ -293,7 +283,6 @@ class _MapScreenState extends State<MapScreen> {
                 //           builder: (BuildContext context, Marker marker) {
                 //               // ExamplePopup(marker),
                 //             LatLng position = (marker.point as LatLng); // Extract LatLng
-                //             print('position=========');
                 //             return Card(
                 //               child: Padding(
                 //                 padding: const EdgeInsets.all(8.0),
@@ -309,18 +298,14 @@ class _MapScreenState extends State<MapScreen> {
 
                 // DragMarkers(markers: _polyEditor.edit()),
                 Consumer<DrawingProvider>(builder: (context, provider, _) {
-                  print(
-                      "===============provider.markers ======${provider.markers}");
                   _polyEditor = PolyEditor(
                       points: provider.markers,
                       pointIcon: const Icon(Icons.adjust, color: Colors.red),
                       pointIconSize: const Size(30, 30),
                       callbackRefresh: (point) {
-                        print("*********************${point}");
                       }
 
                       // setState(() {
-                      //   print("###########");
                       //   // selectedPoints = selectedPoints;
                       // }),
 
@@ -367,6 +352,7 @@ class _MapScreenState extends State<MapScreen> {
             top: screenSize.height * 0.13,
             right: 10,
    child: CompassButton(
+    mapController: _mapController,
      onPressed: () {
        // Handle compass button click if needed
      },

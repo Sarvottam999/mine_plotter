@@ -177,7 +177,6 @@ class DrawingScreen extends StatelessWidget {
             Consumer<DrawingProvider>(
               builder: (context, provider, _) {
                 final details = provider.getCurrentShapeDetails(context);
-                print("details=============>${details}");
                 if (details == null) return const SizedBox();
 
                 return Container(
