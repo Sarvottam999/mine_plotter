@@ -9,6 +9,7 @@ class NoContentView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         AspectRatio(
@@ -36,14 +37,16 @@ class NoContentView extends StatelessWidget {
           
 
             if (sub_text != null && sub_text!.isNotEmpty) // Corrected condition
-          Text(
-            textAlign: TextAlign.center,
-            sub_text!, // Safe to use `text!` here because of the null check
-            style: const TextStyle(
-              
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Colors.black54,
+          Expanded(
+            child: Text(
+              textAlign: TextAlign.center,
+              sub_text!, // Safe to use `text!` here because of the null check
+              style: const TextStyle(
+                
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
             ),
           ),
       ],

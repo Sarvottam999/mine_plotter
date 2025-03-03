@@ -20,6 +20,24 @@ class TileBounds {
   });
 }
 
+// class MapDownloader {
+//   final String id;
+//   final String tileUrl;
+//   final int minZoom;
+//   final int maxZoom;
+//   final LatLng northEast;
+//   final LatLng southWest;
+//   final String mapName;
+
+//   MapDownloader({
+//     required this.id,
+//     required this.tileUrl,
+//     required this.minZoom,
+//     required this.maxZoom,
+//     required this.northEast,
+//     required this.southWest,
+//     required this.mapName,
+//   });
 class MapDownloader {
   final String id;
   final String tileUrl;
@@ -28,6 +46,8 @@ class MapDownloader {
   final LatLng northEast;
   final LatLng southWest;
   final String mapName;
+  final String mapType; // "standard" or "satellite"
+  bool isCancelled = false; 
 
   MapDownloader({
     required this.id,
@@ -37,7 +57,14 @@ class MapDownloader {
     required this.northEast,
     required this.southWest,
     required this.mapName,
+    required this.mapType,
   });
+
+  void cancelDownload() {
+    isCancelled = true;
+  }
+
+
 
   Future<void> downloadTiles(Function(double) onProgress) async {
     final mapDirPath = await StorageHandler.createMapDirectory(id);
@@ -69,6 +96,8 @@ class MapDownloader {
         }
 
         for (int y = bounds.minY; y <= bounds.maxY; y++) {
+          if (isCancelled) return; 
+          
           final tileFile = File('${xDir.path}/$y.png');
           
           if (!await tileFile.exists()) {
@@ -109,6 +138,8 @@ class MapDownloader {
       'northEast': {'lat': northEast.latitude, 'lng': northEast.longitude},
       'southWest': {'lat': southWest.latitude, 'lng': southWest.longitude},
       'downloadDate': DateTime.now().toIso8601String(),
+      'mapType': mapType, // Store the type of map downloaded
+
     };
     await metadataFile.writeAsString(jsonEncode(metadata));
   }

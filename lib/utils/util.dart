@@ -13,7 +13,7 @@ String formatDateTime(String isoDate) {
     DateTime dateTime = DateTime.parse(isoDate);
 
     // Format the date and time
-    String formattedDate = DateFormat('h:mm a, dd MMM yyyy').format(dateTime);
+    String formattedDate = DateFormat('dd MMM yyyy').format(dateTime);
     return formattedDate;
   } catch (e) {
     // Return an error message if parsing fails
@@ -109,3 +109,7 @@ Future<File> getPreviewImage(String mapName) async {
       end,
     );
   }
+
+  double truncateToFourDecimalPlaces(double largeNumber) {
+  return (largeNumber * 10000).truncateToDouble() / 10000;
+}

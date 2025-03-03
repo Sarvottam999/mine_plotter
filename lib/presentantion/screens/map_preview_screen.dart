@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:myapp/molecules/Buttons/back_button.dart';
 import 'package:myapp/presentantion/providers/dowanload_provider.dart';
 import 'package:myapp/presentantion/screens/MarkAreaScreen/models/downloaded_map.dart';
 import 'package:myapp/services/safe_file_tile_provider.dart';
@@ -26,17 +27,10 @@ class _MapPreviewScreenState extends State<MapPreviewScreen> {
 
   void setZoomLevel(double zoom) {
     setState(() {
-      zoomLevel = zoom;
+      // zoomLevel = zoom;
     });
   }
-
-  //  double zoomLevel = 13.0;
-
-  // void setZoomLevel(double zoom) {
-  //   zoomLevel = zoom;
-  //   notifyListeners();
-  // }
-
+ 
   @override
   void initState() {
     // TODO: implement initState
@@ -102,6 +96,20 @@ class _MapPreviewScreenState extends State<MapPreviewScreen> {
                   ),
                 ),
               ),
+
+              Positioned(
+                top: 10,
+                left: 10,
+                child: NBackButton(onPressed: (){
+                  Navigator.pop(context);
+
+                })),
+              
+
+
+
+
+
             ],
           ),
         ),

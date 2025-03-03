@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:myapp/core/enum/fishbone_type.dart';
+import 'package:myapp/presentantion/widgets/showEditInfo.dart';
 import 'package:myapp/utils/contant.dart';
 import 'package:myapp/utils/no_content_view.dart';
 import 'package:provider/provider.dart';
@@ -136,8 +137,8 @@ class ShapeDetailsPanel extends StatelessWidget {
                       child: InkWell(
                         onTap: () => _focusOnShape(shape),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 5),
+                          padding: const  EdgeInsets.symmetric(
+                               vertical: 0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -200,14 +201,21 @@ class ShapeDetailsPanel extends StatelessWidget {
                               const Divider(
                                 color: Colors.white,
                               ),
-                              ...details.entries
-                                  .where((e) => e.key != 'type')
-                                  .map((e) => Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 4.0),
-                                        child: Text(
-                                            '${_formatKey(e.key)}: ${e.value}'),
-                                      )),
+
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                
+                                child: ShowEditInfo(shape: shape,))
+
+
+                              // ...details.entries
+                              //     .where((e) => e.key != 'type')
+                              //     .map((e) => Padding(
+                              //           padding: const EdgeInsets.symmetric(
+                              //               horizontal: 10, vertical: 4.0),
+                              //           child: Text(
+                              //               '${_formatKey(e.key)}: ${e.value}'),
+                              //         )),
                             ],
                           ),
                         ),

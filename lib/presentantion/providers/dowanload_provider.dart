@@ -16,6 +16,8 @@ class MapProvider extends ChangeNotifier {
   bool isDownloading = false;
   double currentProgress = 0;
   String currentStatus = '';
+  MapDownloader? currentDownloader;  
+
 
     double currentZoomLevel = 13.0;
 
@@ -40,7 +42,6 @@ void setPreviewMap(String? id)  async{
 }
 
   // ==========================
-  // DownloadedMap? currentOfflineMap;
   String? currentTilePath;
 
 
@@ -95,10 +96,10 @@ Future<void> deleteMap(int index) async {
  final directory = await getExternalStorageDirectory();
  final mapDir = Directory('${directory!.path}/offline_maps/${map.id}');
  
- await mapDir.delete(recursive: true); // Delete folder and contents
- downloadedMaps.removeAt(index);       // Remove from list
- notifyListeners();                    // Update UI
- await loadMaps();                     // Refresh map list
+ await mapDir.delete(recursive: true);  
+ downloadedMaps.removeAt(index);        
+ notifyListeners();                     
+ await loadMaps();                     
 }
 
 
@@ -161,32 +162,48 @@ double calculateArea() {
 }
   
 
-  Future<void> downloadMap(DownloadedMap map, int minZoom, int maxZoom) async {
+  Future<void> downloadMap(DownloadedMap map, int minZoom, int maxZoom, String mapType) async {
     isDownloading = true;
-        // final id = DateTime.now().millisecondsSinceEpoch.toString();
+
+  String tileUrl;
+  if (mapType == "satellite") {
+    tileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+  } else {
+    tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+  }
 
 
-    final downloader = MapDownloader(
+      currentDownloader = MapDownloader(
       id: map.id,
-      tileUrl: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      tileUrl: tileUrl,
       minZoom: minZoom,
       maxZoom: maxZoom,
       northEast: map.northEast,
       southWest: map.southWest,
       mapName: map.name,
+          mapType: mapType,
+
     );
 
     try {
-      await downloader.downloadTiles((progress) {
+      await currentDownloader?.downloadTiles((progress) {
+        print("downloadMap --> ${currentDownloader!.isCancelled} ");
+      if (currentDownloader!.isCancelled) return; // Stop if cancelled
+
         currentProgress = progress;
         currentStatus = 'Downloading tiles...';
         notifyListeners();
       });
 
-      downloadedMaps.add(map);
+      if (!currentDownloader!.isCancelled) {
+        downloadedMaps.add(map);
+        currentStatus = 'Download completed!';
+        await _saveMaps();
+      }
+
       isDownloading = false;
-      currentStatus = 'Download completed!';
-      await _saveMaps();
+
+
       notifyListeners();
     } catch (e) {
       isDownloading = false;
@@ -212,5 +229,14 @@ double calculateArea() {
     final prefs = await SharedPreferences.getInstance();
     final mapsJson = downloadedMaps.map((map) => jsonEncode(map.toJson())).toList();
     await prefs.setStringList('downloaded_maps', mapsJson);
+  }
+
+   void cancelDownload() {
+    if (isDownloading && currentDownloader != null) {
+      currentDownloader!.cancelDownload();
+      isDownloading = false;
+      currentStatus = 'Download cancelled!';
+      notifyListeners();
+    }
   }
 }

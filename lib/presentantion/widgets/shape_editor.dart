@@ -18,18 +18,19 @@ class ShapeEditor extends StatefulWidget {
 class _ShapeEditorState extends State<ShapeEditor> {
   late PolyEditor _polyEditor;
   List<LatLng> _editablePoints = [];
+  List<LatLng>? _backupPoints;
 
   @override
-void initState() {
+  void initState() {
     super.initState();
-    _polyEditor = PolyEditor(
-      points: _editablePoints,
-      pointIcon: const Icon(Icons.location_on, color: Colors.green),
-      intermediateIcon: const Icon(Icons.lens, color: Colors.blue),
-      intermediateIconSize: const Size(20, 20),
-      pointIconSize: const Size(30, 30),
-      // callbackRefresh: (point) => setState(() {}),
-    );
+    // _polyEditor = PolyEditor(
+    //   points: _editablePoints,
+    //   pointIcon: const Icon(Icons.location_on, color: Colors.green),
+    //   intermediateIcon: const Icon(Icons.lens, color: Colors.blue),
+    //   intermediateIconSize: const Size(20, 20),
+    //   pointIconSize: const Size(30, 30),
+    //   // callbackRefresh: (point) => setState(() {}),
+    // );
   }
 
   @override
@@ -37,23 +38,35 @@ void initState() {
     return Consumer<DrawingProvider>(
       builder: (context, provider, _) {
         if (!provider.isEditing || provider.selectedShape == null) {
-          return   Container();
+          return Container();
         }
+        if (_backupPoints == null)
+          _backupPoints = provider.selectedShape!.points;
 
         // Update editable points when selected shape changes
         if (_editablePoints != provider.selectedShape!.points) {
+          // if(_editablePoints != null)
           _editablePoints = List.from(provider.selectedShape!.points);
           _polyEditor = PolyEditor(
-
             points: _editablePoints,
-            pointIcon: const Icon(Icons.my_location_outlined, color: Colors.green, size: 15,),
-            intermediateIcon: const Icon(Icons.my_location_outlined, color: Colors.blue, size: 15),
+            pointIcon: const Icon(
+              Icons.my_location_outlined,
+              color: Colors.green,
+              size: 15,
+            ),
+            intermediateIcon: const Icon(Icons.my_location_outlined,
+                color: Colors.blue, size: 15),
             intermediateIconSize: const Size(20, 20),
             pointIconSize: const Size(20, 20),
             callbackRefresh: (latlon) {
               setState(() {}); // Ensure the UI is refreshed when changes occur.
               // If you need to update something specific, include logic here.
-              provider.updateShapePoints(_editablePoints); // Example of updating points.
+              provider.updateShapePoints(
+                  _editablePoints); // Example of updating points.
+              // provider.TempUpdateShapePoints(_editablePoints);
+              // _tempEditablePoints = _editablePoints;
+              print("######## ${_editablePoints}");
+              print("######## _backupPoints${_backupPoints}");
             },
             //   setState(() {});
             //   provider.updateShapePoints(_editablePoints);
@@ -75,8 +88,8 @@ void initState() {
             ),
             // Add the drag markers
             // MarkerLayer(
-            //   markers: _polyEditor.edit().map((dragMarker) => 
-            //     Marker( 
+            //   markers: _polyEditor.edit().map((dragMarker) =>
+            //     Marker(
             //       child: Icon(Icons.ac_unit),
             //       point: dragMarker.point,
             //       width: dragMarker.size.width,
@@ -87,25 +100,27 @@ void initState() {
             // ),
             // Control buttons
 
-            DragMarkers(markers: _polyEditor.edit(),),
+            DragMarkers(
+              markers: _polyEditor.edit(),
+            ),
             Positioned(
-               left: 0,
-                  top: 130,
-                  right: 0,
+              left: 0,
+              top: 130,
+              right: 0,
               child: Center(
                 child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                spreadRadius: 1,
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        spreadRadius: 1,
+                        blurRadius: 10,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
                   child: Row(
                     spacing: 2,
                     mainAxisSize: MainAxisSize.min,
@@ -116,14 +131,23 @@ void initState() {
                         onPressed: () {
                           provider.updateShapePoints(_editablePoints);
                           provider.cancelEdit();
-                        }, 
+                          _backupPoints = null;
+                        },
                       ),
                       const SizedBox(height: 8),
                       IconButton(
-                        icon: const Icon(Icons.close),
-                                               onPressed: () => provider.cancelEdit(),
+                          icon: const Icon(Icons.close),
+                          onPressed: () {
+                            if (_backupPoints != null) {
+                            provider.updateShapePoints(_backupPoints!);
+                            _backupPoints = null;
+                            
+                          }
 
-                      ),
+                          }
+                          //  () => provider.cancelEdit(),
+
+                          ),
                       // FloatingActionButton(
                       //   heroTag: 'cancel_edit',
                       //   onPressed: () => provider.cancelEdit(),
@@ -132,11 +156,10 @@ void initState() {
                       //   child: const Icon(Icons.close),
                       // ),
                       const SizedBox(height: 8),
-                            const SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       IconButton(
                         icon: const Icon(Icons.delete_outline_outlined),
                         onPressed: () => provider.deleteSelectedShape(),
-
                       ),
                       // FloatingActionButton(
                       //   heroTag: 'delete_shape',

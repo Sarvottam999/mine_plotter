@@ -1,42 +1,25 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_dragmarker/flutter_map_dragmarker.dart';
 import 'package:flutter_map_line_editor/flutter_map_line_editor.dart';
-// import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:myapp/core/enum/fishbone_type.dart';
 import 'package:myapp/core/enum/shape_type.dart';
-import 'package:myapp/database/location_database.dart';
-import 'package:myapp/domain/entities/circle_shape.dart';
-import 'package:myapp/domain/entities/fishbone_shape.dart';
-import 'package:myapp/domain/entities/shape.dart';
-import 'package:myapp/domain/entities/square_shape.dart';
 import 'package:myapp/molecules/Buttons/icon_button.dart';
 import 'package:myapp/presentantion/providers/dowanload_provider.dart';
 import 'package:myapp/presentantion/providers/drawing_provider.dart';
 import 'package:myapp/presentantion/screens/SettingScreen/setting_screen.dart';
 import 'package:myapp/presentantion/screens/map_screen/utils.dart';
-import 'package:myapp/presentantion/widgets/ShowMyLocationButton.dart';
 import 'package:myapp/presentantion/widgets/compass_button.dart';
-import 'package:myapp/presentantion/widgets/coordinate_popup.dart';
 import 'package:myapp/presentantion/widgets/coordinate_search_bar.dart';
 import 'package:myapp/presentantion/widgets/current_location_marke.dart';
-import 'package:myapp/presentantion/widgets/current_location_marker.dart';
 import 'package:myapp/presentantion/widgets/draggable_coordinate_shower.dart';
-import 'package:myapp/presentantion/widgets/drawing_button.dart';
-import 'package:myapp/presentantion/widgets/floating_toolbar.dart';
 import 'package:myapp/presentantion/widgets/map_layers.dart';
 import 'package:myapp/presentantion/widgets/map_tile_selector.dart';
-import 'package:myapp/presentantion/widgets/search_location.dart';
 import 'package:myapp/presentantion/widgets/selection_button.dart';
 import 'package:myapp/presentantion/widgets/shape_details_panel.dart';
 import 'package:myapp/presentantion/widgets/shape_editor.dart';
+import 'package:myapp/presentantion/widgets/showEditInfo.dart';
 import 'package:myapp/services/safe_file_tile_provider.dart';
-import 'package:myapp/utils/util.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -47,58 +30,13 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   final MapController _mapController = MapController();
-  bool _isMapReady = false;
-  bool _isPanelVisible = false;
-  bool _isSearchBarVisible = false;
-  bool _isDownnloadedLayerVisible = true;
   MapLayer currentMapLayer = maplayersData[0];
 
-  // -----------------------  new   --------------------------
-  OptsButtonType? _currentSelectedButton; // Tracks which button is selected
+  OptsButtonType? _currentSelectedButton;
 
   late PolyEditor _polyEditor;
-  // List<LatLng> selectedMarkerPoints = [];
 
-  // final PopupController _popupLayerController = PopupController();
-
-  // void _handleShapeSelection(DrawingProvider provider, LatLng clickPoint) {
-  //   Shape? selectedShape;
-  //   double minDistance = 100; // threshold in meters
-
-  //   // Check each shape
-  //   for (var shape in provider.shapes) {
-  //     // Get all polylines for this shape
-  //     List<Polyline> polylines = shape.getPolylines();
-
-  //     // Check each polyline in the shape
-  //     for (var polyline in polylines) {
-  //       // Check each segment in the polyline
-  //       for (int i = 0; i < polyline.points.length - 1; i++) {
-  //         LatLng start = polyline.points[i];
-  //         LatLng end = polyline.points[i + 1];
-
-  //         // Calculate distance from click to line segment
-  //         double distance = distanceToLineSegment(clickPoint, start, end);
-
-  //         if (distance < minDistance) {
-  //           minDistance = distance;
-  //           selectedShape = shape;
-  //         }
-  //       }
-  //     }
-  //   }
-
-  //   // If we found a shape close enough to the click
-  //   if (selectedShape != null) {
-  //     // Toggle selection if clicking the same shape
-
-  //     provider.selectShape(
-  //         selectedShape == provider.selectedShape ? null : selectedShape);
-  //   } else {
-  //     // Deselect if clicked away from shapes
-  //     provider.selectShape(null);
-  //   }
-  // }
+  double zoom_level = 0;
 
   @override
   void initState() {
@@ -107,15 +45,7 @@ class _MapScreenState extends State<MapScreen> {
         points: context.read<DrawingProvider>().markers,
         pointIcon: const Icon(Icons.adjust, color: Colors.red),
         pointIconSize: const Size(30, 30),
-        callbackRefresh: (point) {
-        }
-
-        // setState(() {
-        //   // selectedPoints = selectedPoints;
-        // }),
-
-        );
-    // _mapController = MapController();
+        callbackRefresh: (point) {});
   }
 
   @override
@@ -132,13 +62,8 @@ class _MapScreenState extends State<MapScreen> {
         pointIcon: const Icon(Icons.adjust, color: Colors.red),
         pointIconSize: const Size(30, 30),
         callbackRefresh: (point) {
-        }
-
-        // setState(() {
-        //   // selectedPoints = selectedPoints;
-        // }),
-
-        );
+          // print("#############    ${point}");
+        });
 
     return Scaffold(
       body: Stack(
@@ -146,23 +71,17 @@ class _MapScreenState extends State<MapScreen> {
           FlutterMap(
               mapController: _mapController,
               options: MapOptions(
+                onMapEvent: (event) {
+                  setState(() {
+                    zoom_level = event.camera.zoom;
+                  }); // Update zoom level in provider
+                },
                 onTap: (_, point) {
-                  // final provider = context.watch<DrawingProvider>();
                   final provider =
                       Provider.of<DrawingProvider>(context, listen: false);
                   if (provider.currentShape == ShapeType.point) {
                     provider.addMarker(point);
-                    // setState(() {
-                    // selectedMarkerPoints.add(point);
-                    // });
-                  }
-                  // else if (provider.isSelectionMode) {
-                  //   // _handleShapeSelection(provider, point);
-
-                  //   // sadcdcas
-
-                  // }
-                  else if (provider.currentShape != ShapeType.none) {
+                  } else if (provider.currentShape != ShapeType.none) {
                     provider.addPoint(point);
                   } else {
                     Positioned(
@@ -173,24 +92,11 @@ class _MapScreenState extends State<MapScreen> {
                     );
                   }
                 },
-                // onTap: (_, point) {
-                //   final provider = context.read<DrawingProvider>();
-                //   if (provider.currentShape != ShapeType.none) {
-                //     provider.addPoint(point);
-                //   }
-                // },
                 onPointerHover: (event, point) {
-
                   final provider = context.read<DrawingProvider>();
                   if (provider.currentShape != ShapeType.none) {
                     provider.updateCursor(point);
                   }
-
-                },
-                onMapReady: () {
-                  setState(() {
-                    _isMapReady = true;
-                  });
                 },
               ),
               children: [
@@ -203,35 +109,17 @@ class _MapScreenState extends State<MapScreen> {
                               : NetworkTileProvider(),
                           subdomains: provider.currentTilePath != null
                               ? []
-                              : currentMapLayer.subdomains,
+                              : currentMapLayer.subdomains ?? [],
                           errorImage:
                               const AssetImage('assets/placeholder_tile.png'),
-                        )
+                        )),
 
-                    // TileLayer(
-                    //   urlTemplate:
-                    //       provider.currentTilePath ?? currentMapLayer.url,
-                    //   tileProvider: provider.currentTilePath != null
-                    //       ? FileTileProvider()
-                    //       : NetworkTileProvider(),
-                    //   subdomains: provider.currentTilePath != null
-                    //       ? []
-                    //       : currentMapLayer.subdomains,
-                    // ),
-                    ),
-
-                //           // TileLayer(
-                //   urlTemplate: currentMapLayer.url,
-                //   // 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                //   subdomains: currentMapLayer.subdomains,
-                // ),
                 Consumer<DrawingProvider>(
                   builder: (context, provider, _) {
                     return PolylineLayer(
                       polylines: [
                         ...provider.shapes.expand((shape) {
                           var polylines = shape.getPolylines();
-                          // Highlight selected shape
                           if (shape == provider.selectedShape) {
                             polylines = polylines
                                 .map((polyline) => Polyline(
@@ -261,49 +149,14 @@ class _MapScreenState extends State<MapScreen> {
                 ),
 
 
+              
 
-                // Popup Layer
-                //       PopupMarkerLayer(
-                //         options: PopupMarkerLayerOptions(
-                //           popupController: _popupLayerController,
-                //            markers: _polyEditor.edit().map((dragMarker) {
-                //   return Marker(
-                //     point: dragMarker.point,
-                //     width: 30,
-                //     height: 30,
-                //     child: GestureDetector(
-                //       onTap: () {
-                //         _popupLayerController.togglePopup(Marker(point: dragMarker.point, child: Icon(Icons.access_time_filled_sharp)));
-                //       },
-                //       child: const Icon(Icons.location_on, color: Colors.red, size: 30),
-                //     ),
-                //   );
-                // }).toList(),
-                //  popupDisplayOptions: PopupDisplayOptions(
-                //           builder: (BuildContext context, Marker marker) {
-                //               // ExamplePopup(marker),
-                //             LatLng position = (marker.point as LatLng); // Extract LatLng
-                //             return Card(
-                //               child: Padding(
-                //                 padding: const EdgeInsets.all(8.0),
-                //                 child: Text(
-                //                   "Lat: ${position.latitude.toStringAsFixed(5)}\nLng: ${position.longitude.toStringAsFixed(5)}",
-                //                   style: TextStyle(fontSize: 14),
-                //                 ),
-                //               ),
-                //             );
-                //           },
-                //         ),
-                //         )),
-
-                // DragMarkers(markers: _polyEditor.edit()),
                 Consumer<DrawingProvider>(builder: (context, provider, _) {
                   _polyEditor = PolyEditor(
                       points: provider.markers,
                       pointIcon: const Icon(Icons.adjust, color: Colors.red),
                       pointIconSize: const Size(30, 30),
-                      callbackRefresh: (point) {
-                      }
+                      callbackRefresh: (point) {}
 
                       // setState(() {
                       //   // selectedPoints = selectedPoints;
@@ -338,6 +191,13 @@ class _MapScreenState extends State<MapScreen> {
 //                     ),
               ]),
 
+          //    Positioned(
+          // top: MediaQuery.of(context).size.height*0.2,
+          // left: 0,
+          // right: 0,
+          // child: Center(
+          //   child:  ShowEditInfo())),
+
           Positioned(
             top: MediaQuery.of(context).padding.top + 10,
             left: 0,
@@ -351,14 +211,13 @@ class _MapScreenState extends State<MapScreen> {
           Positioned(
             top: screenSize.height * 0.13,
             right: 10,
-   child: CompassButton(
-    mapController: _mapController,
-     onPressed: () {
-       // Handle compass button click if needed
-     },
-   ),
-),
-
+            child: CompassButton(
+              mapController: _mapController,
+              onPressed: () {
+                // Handle compass button click if needed
+              },
+            ),
+          ),
 
           // -------------------  right bottom button --------------
 
@@ -377,8 +236,8 @@ class _MapScreenState extends State<MapScreen> {
                   child: CurrentLocationLayer(
                     mapController: _mapController,
                     onLocationMarked: (location) {
-                      final provider = Provider.of<DrawingProvider>(context,
-                          listen: false);
+                      final provider =
+                          Provider.of<DrawingProvider>(context, listen: false);
                       provider.addMarker(location);
                     },
                   ),
@@ -405,10 +264,9 @@ class _MapScreenState extends State<MapScreen> {
                           OptsButtonType button = entry.key;
                           // Widget label = entry.value;
                           return NIconButton(
-                            backgroundColor:
-                                _currentSelectedButton == entry.key
-                                    ? Colors.black
-                                    : Colors.white,
+                            backgroundColor: _currentSelectedButton == entry.key
+                                ? Colors.black
+                                : Colors.white,
                             icon: Icon(entry.value,
                                 color: _currentSelectedButton == entry.key
                                     ? Colors.white
@@ -416,8 +274,7 @@ class _MapScreenState extends State<MapScreen> {
                             onPressed: () {
                               if (button == OptsButtonType.setting) {
                                 setState(() {
-                                  _currentSelectedButton =
-                                      OptsButtonType.none;
+                                  _currentSelectedButton = OptsButtonType.none;
                                 });
                                 Navigator.push(
                                   context,
@@ -425,7 +282,7 @@ class _MapScreenState extends State<MapScreen> {
                                       builder: (context) => SettingsPage()),
                                 );
                               }
-                
+
                               // } else {
                               setState(() {
                                 _currentSelectedButton =
@@ -467,24 +324,24 @@ class _MapScreenState extends State<MapScreen> {
 
           // dowaloaded layers
           // if (_isDownnloadedLayerVisible) // Add condition here
-          if (_currentSelectedButton == OptsButtonType.downloadedMaps)
-            Positioned(
-              right: sidePaneSize,
-              top: screenSize.height * 0.15,
-              bottom: screenSize.height * 0.2,
-              child: AnimatedSize(
-                duration: const Duration(milliseconds: 300),
-                child: MapTileSelector(
-                  mapController: _mapController,
-                  // mapController: _mapController,
-                  // onPressed: () {
-                  //   setState(() {
-                  //     _isPanelVisible = !_isPanelVisible;
-                  //   });
-                  // },
-                ),
-              ),
-            ),
+          // if (_currentSelectedButton == OptsButtonType.downloadedMaps)
+          //   Positioned(
+          //     right: sidePaneSize,
+          //     top: screenSize.height * 0.15,
+          //     bottom: screenSize.height * 0.2,
+          //     child: AnimatedSize(
+          //       duration: const Duration(milliseconds: 300),
+          //       child: MapTileSelector(
+          //         mapController: _mapController,
+          //         // mapController: _mapController,
+          //         // onPressed: () {
+          //         //   setState(() {
+          //         //     _isPanelVisible = !_isPanelVisible;
+          //         //   });
+          //         // },
+          //       ),
+          //     ),
+          //   ),
 
 // ###############################################################################
 
@@ -492,13 +349,101 @@ class _MapScreenState extends State<MapScreen> {
           Positioned(
               bottom: 10,
               right: 10,
-              child: LayerSelector(onLayerChanged: (value) {
-                setState(() {
-                  currentMapLayer = value;
-                });
-              })),
+              child: LayerSelector(
+                  mapController: _mapController,
+                  onLayerChanged: (value) {
+                    setState(() {
+                      currentMapLayer = value;
+                    });
+                  })),
+
+          // ====================  undo/redo button ==============
+          Positioned(bottom: 10, left: 10, child: undoButtons()),
+
+          // ?============== zoom level ==================
+          Positioned(
+            bottom: 10,
+            // right: 0,
+            left: 120,
+            child: Container(
+              padding: const EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4.0,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                spacing: 5,
+                children: [
+                  Icon(
+                    Icons.open_in_full,
+                    size: 18,
+                  ),
+                  Text(
+                    'Zoom: ${zoom_level.toStringAsFixed(1)}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
+}
+
+Widget undoButtons() {
+  return Center(
+    child: Container(
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 255, 255, 255),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Consumer<DrawingProvider>(
+            builder: (context, provider, _) => IconButton(
+              icon: const Icon(
+                Icons.redo,
+                size: 18,
+              ),
+              onPressed: provider.canRedo ? provider.redo : null,
+              tooltip: 'Redo',
+            ),
+          ),
+          Consumer<DrawingProvider>(
+            builder: (context, provider, _) => Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: const Icon(
+                    Icons.undo,
+                    size: 18,
+                  ),
+                  onPressed: provider.canUndo ? provider.undo : null,
+                  tooltip: 'Undo',
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }

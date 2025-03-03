@@ -137,7 +137,7 @@ class _CoordinateSearchState extends State<CoordinateSearch> {
                             ),
                             ButtonSegment(
                               value: 'stored',
-                              label: Text('Stored'),
+                              label: Text('Saved location'),
                             ),
                               
                             ],

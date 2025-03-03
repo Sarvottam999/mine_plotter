@@ -46,7 +46,7 @@ class MapTileSelector extends StatelessWidget {
                     ),
                     Expanded(
                       child: ListView.builder(
-                        itemCount:provider.downloadedMaps.length ,
+                        itemCount:provider.downloadedMaps.length,
                         itemBuilder: (context, index) {
                           var map = provider.downloadedMaps[index];
                         return  Container(
@@ -86,3 +86,4 @@ class MapTileSelector extends StatelessWidget {
         );
       }
     }
+

@@ -158,7 +158,6 @@ class DrawingScreen extends StatelessWidget {
           MapScreen(),
           sideBaar(),
           // bottomBar(),
-          undoButtons(),
           FishboneTypeSelector(),
         ],
       ),
@@ -280,56 +279,6 @@ class DrawingScreen extends StatelessWidget {
     );
   }
 
-  Positioned undoButtons() {
-    return Positioned(
-      bottom: 10,
-      left: 10,
-      child: Center(
-        child: Container(
-          decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 255, 255, 255),
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                spreadRadius: 1,
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Consumer<DrawingProvider>(
-                builder: (context, provider, _) => IconButton(
-                  icon: const Icon(
-                    Icons.redo,
-                    size: 18,
-                  ),
-                  onPressed: provider.canRedo ? provider.redo : null,
-                  tooltip: 'Redo',
-                ),
-              ),
-              Consumer<DrawingProvider>(
-                builder: (context, provider, _) => Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: const Icon(
-                        Icons.undo,
-                        size: 18,
-                      ),
-                      onPressed: provider.canUndo ? provider.undo : null,
-                      tooltip: 'Undo',
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  
+
 }

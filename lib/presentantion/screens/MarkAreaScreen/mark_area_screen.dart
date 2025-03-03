@@ -1,3 +1,4 @@
+ 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_dragmarker/flutter_map_dragmarker.dart';
@@ -6,18 +7,35 @@ import 'package:myapp/molecules/Buttons/icon_button.dart';
 import 'package:myapp/molecules/Buttons/outline_filled_button.dart';
 import 'package:myapp/presentantion/providers/dowanload_provider.dart';
 import 'package:myapp/presentantion/screens/MarkAreaScreen/models/downloaded_map.dart';
+import 'package:myapp/presentantion/widgets/map_layers.dart';
 import 'package:myapp/utils/contant.dart';
 import 'package:provider/provider.dart';
 
-class MapSelectorScreen extends StatelessWidget {
+class MapSelectorScreen extends StatefulWidget {
   const MapSelectorScreen({super.key});
+
+  @override
+  State<MapSelectorScreen> createState() => _MapSelectorScreenState();
+}
+
+class _MapSelectorScreenState extends State<MapSelectorScreen> {
+
+    String selectedMapType = "standard"; // Default
+
+    onSelect(String type){
+       setState(() {
+                  selectedMapType = type;
+                });
+  }
 
   void _showDownloadDialog(BuildContext context) {
     final provider = Provider.of<MapProvider>(context, listen: false);
     TextEditingController nameController = TextEditingController();
+  
+      
+
 
     showDialog(
-      
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Colors.white,
@@ -26,21 +44,31 @@ class MapSelectorScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
-              controller: nameController,
-              decoration: InputDecoration(
-                hoverColor: my_orange,
-                labelStyle: TextStyle(
-                  color: my_orange
-                ),
-                labelText: 'Map Name',
-                hintText: 'Enter a name for this map',
-                          focusedBorder:OutlineInputBorder(
-            borderSide: const BorderSide(color: my_orange, width: 2.0),
-            // borderRadius: BorderRadius.circular(25.0),
-
-              ),
-              
-            )
+                controller: nameController,
+                decoration: InputDecoration(
+                  hoverColor: my_orange,
+                  labelStyle: TextStyle(color: Colors.black),
+                  labelText: 'Map Name',
+                  hintText: 'Enter a name for this map',
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: my_orange, width: 2.0),
+                    // borderRadius: BorderRadius.circular(25.0),
+                  ),
+                )),
+            SizedBox(height: 10),
+            DropdownButton<String>(
+              value: selectedMapType,
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  selectedMapType = newValue;
+                }
+              },
+              items: [
+                DropdownMenuItem(
+                    value: "standard", child: Text("Standard Map")),
+                DropdownMenuItem(
+                    value: "satellite", child: Text("Satellite Map")),
+              ],
             ),
             SizedBox(height: 16),
             Text('Area: ${provider.calculateArea().toStringAsFixed(2)} km²'),
@@ -56,7 +84,7 @@ class MapSelectorScreen extends StatelessWidget {
           NButtonOutline(
             color: my_orange,
             label: 'Download',
-            
+
             onPressed: () {
               final mapName = nameController.text.isNotEmpty
                   ? nameController.text
@@ -74,16 +102,17 @@ class MapSelectorScreen extends StatelessWidget {
               );
 
               provider.downloadMap(map, provider.zoomRange.start.round(),
-                  provider.zoomRange.end.round());
+                  provider.zoomRange.end.round(), selectedMapType);
 
-              Navigator.pop(context);  
-             },
+              Navigator.pop(context);
+            },
             // child: Text('Download'),
           ),
         ],
       ),
     );
-  }
+
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +125,7 @@ class MapSelectorScreen extends StatelessWidget {
             Container(
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
-              child: MapSelector(),
+              child: MapSelector( selectedMapType: selectedMapType, onChange: onSelect,),
             ),
             Positioned(
               bottom: 10,
@@ -113,31 +142,40 @@ class MapSelectorScreen extends StatelessWidget {
               ),
             ),
             sideBaar(context),
-            
-                           Positioned(
-  top: 10,
-  right: 10,
-  child: Consumer<MapProvider>(
-    builder: (context, provider, child) => Container(
-      padding: const EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 4.0,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Text(
-        'Zoom: ${provider.currentZoomLevel.toStringAsFixed(1)}',
-        style: const TextStyle(fontWeight: FontWeight.bold),
-      ),
-    ),
-  ),
-),
+ 
+            Positioned(
+              top: 10,
+              right: 10,
+              child: Consumer<MapProvider>(
+                builder: (context, provider, child) => Container(
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 4.0,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    'Zoom: ${provider.currentZoomLevel.toStringAsFixed(1)}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ),
+
+              // Positioned(
+              // bottom: 10,
+              // right: 10,
+              // child: LayerSelector(onLayerChanged: (value) {
+              //   setState(() {
+              //     currentMapLayer = value;
+              //   });
+              // })),
             // Container(
           ],
         ),
@@ -153,7 +191,7 @@ class MapSelectorScreen extends StatelessWidget {
         child: Center(
           child: Consumer<MapProvider>(
               builder: (context, provider, child) =>
-                  provider.selectedPoints.length >= 3
+                  provider.selectedPoints.length >= 1
                       ? Container(
                           padding:
                               EdgeInsets.symmetric(horizontal: 5, vertical: 5),
@@ -184,12 +222,12 @@ class MapSelectorScreen extends StatelessWidget {
                                   icon: Icon(Icons.undo),
                                   onPressed: () => provider.removeLastPoint(),
                                 ),
-          
+
                                 NIconButton(
                                   icon: Icon(Icons.delete),
                                   onPressed: () => provider.clearPoints(),
                                 ),
-          
+
                                 //  Consumer<MapProvider>(
                                 //     builder: (context, provider, child) => provider.selectedPoints.length >= 3
                                 //         ? NIconButton(
@@ -198,8 +236,6 @@ class MapSelectorScreen extends StatelessWidget {
                                 //           )
                                 //         : SizedBox(),
                                 //   )
-                 
-
                               ],
                             ),
                           ),
@@ -246,39 +282,97 @@ Widget _buildZoomSlider() {
   );
 }
 
-class MapSelector extends StatelessWidget {
+class MapSelector extends StatefulWidget {
+    final String selectedMapType;
+
+     final void Function(String value) onChange;
+
+    const MapSelector({Key? key, required this.selectedMapType, required this.onChange }) : super(key: key);
+
+  @override
+  State<MapSelector> createState() => _MapSelectorState();
+}
+
+ 
+
+class _MapSelectorState extends State<MapSelector> {
+  // MapLayer currentMapLayer = maplayersData[0];
+  // String selectedMapType = "standard";
+
+  // void _changeMapType(String mapType) {
+  //   setState(() {
+  //     selectedMapType = mapType;
+  //   });
+  // }
+
   @override
   Widget build(BuildContext context) {
- 
-    return Consumer<MapProvider>(
-      builder: (context, provider, child) => FlutterMap(
-        options: MapOptions(
-          initialCenter: LatLng(51.5, -0.09),
-          initialZoom: 13.0,
-          onTap: provider.addPoint,
-           onMapEvent: (event) {
-             provider.setZoomLevel(event.camera.zoom); 
-        },
-        ),
-        children: [
-          TileLayer(
-            urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            subdomains: ['a', 'b', 'c'],
-          ),
-          PolygonLayer(
-            polygons: [
-              if (provider.selectedPoints.length >= 3)
-                Polygon(
-                  points: provider.selectedPoints,
-                  color: Colors.blue.withOpacity(0.3),
-                  borderColor: Colors.blue,
-                  borderStrokeWidth: 2,
-                ),
+    return Stack(
+      children: [
+        Consumer<MapProvider>(
+          builder: (context, provider, child) => FlutterMap(
+            options: MapOptions(
+              initialCenter: LatLng(51.5, -0.09),
+              initialZoom: 19.0,
+              maxZoom: 19,
+              
+              onTap: provider.addPoint,
+              onMapEvent: (event) {
+                provider.setZoomLevel(event.camera.zoom);
+              },
+            ),
+            children: [
+              TileLayer(
+                // minZoom: 19,
+                
+                 
+                urlTemplate: widget.selectedMapType == "satellite"
+                    ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                    : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                subdomains: ['a', 'b', 'c'],
+              ),
+              PolygonLayer(
+                polygons: [
+                  if (provider.selectedPoints.length >= 3)
+                    Polygon(
+                      points: provider.selectedPoints,
+                      color: Colors.blue.withOpacity(0.3),
+                      borderColor: Colors.blue,
+                      borderStrokeWidth: 2,
+                    ),
+                ],
+              ),
+              DragMarkers(markers: provider.polyEditor.edit()),
             ],
           ),
-          DragMarkers(markers: provider.polyEditor.edit()),
-        ],
-      ),
+        ),
+        Positioned(
+          top: 50,
+          right: 10,
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(6),
+            color: Colors.white,
+            ),
+            child: DropdownButton<String>(
+              underline: SizedBox(),
+              dropdownColor: Colors.white,
+
+              value: widget.selectedMapType,
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  widget.onChange(newValue);
+                }
+              },
+              items: [
+                DropdownMenuItem(value: "standard", child: Text("Standard Map")),
+                DropdownMenuItem(value: "satellite", child: Text("Satellite Map")),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

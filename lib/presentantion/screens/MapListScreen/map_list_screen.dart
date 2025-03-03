@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myapp/molecules/Buttons/icon_button.dart';
 import 'package:myapp/presentantion/providers/dowanload_provider.dart';
 import 'package:myapp/presentantion/screens/MarkAreaScreen/mark_area_screen.dart';
 import 'package:myapp/presentantion/screens/MarkAreaScreen/models/downloaded_map.dart';
@@ -10,6 +12,7 @@ import 'package:myapp/presentantion/screens/map_screen/utils.dart';
 import 'package:myapp/presentantion/widgets/download_button.dart';
 import 'package:myapp/presentantion/widgets/location_card2.dart';
 import 'package:myapp/presentantion/widgets/location_card.dart';
+import 'package:myapp/utils/contant.dart';
 import 'package:myapp/utils/no_content_view.dart';
 import 'package:myapp/utils/util.dart';
 import 'package:path_provider/path_provider.dart';
@@ -35,7 +38,7 @@ class _MapListScreenState extends State<MapListScreen> {
     int crossAxisCount =
         screenWidth > 600 ? 2 : 2; 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.white, 
 
       body: Consumer<MapProvider>(
         builder: (context, mapProvider, child) {
@@ -43,12 +46,44 @@ class _MapListScreenState extends State<MapListScreen> {
             child: Column(
               children: [
                 if (mapProvider.isDownloading)
-                  Padding(
-                    padding: EdgeInsets.all(16),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: my_orange_light,
+                      border: Border.all(color: my_orange),
+                      borderRadius: BorderRadius.circular(10)
+                    ),
+
+                    padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+                    margin: EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       children: [
-                        LinearProgressIndicator(
-                            value: mapProvider.currentProgress),
+                            // SvgPicture.asset('assets/download_logo.svg', height: 50, width: 50,),
+// const Color(0xFF4CAF50)
+
+                        Row(
+                          spacing: 10,
+                          children: [
+                            Expanded(
+                              child: LinearProgressIndicator(
+                                minHeight: 10,
+                                backgroundColor: Colors.black12,
+                                color: my_orange,borderRadius: BorderRadius.circular(10),
+                                  value: mapProvider.currentProgress),
+                            ),
+                            NIconButton(
+                               icon: Icon(Icons.cancel_outlined, color: Colors.white,),
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white,
+                              
+                              onPressed: ()=>{})
+                                // ElevatedButton(
+                                  
+                                //             onPressed: () => mapProvider.cancelDownload(),
+                                //             child: Text('Cancel', style: TextStyle(color: Colors.red)),
+                                //           )
+
+                          ],
+                        ),
                         Text(mapProvider.currentStatus),
                       ],
                     ),

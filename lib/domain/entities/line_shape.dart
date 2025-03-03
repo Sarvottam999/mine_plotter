@@ -107,14 +107,15 @@ class LineShape extends Shape {
     }
 
     if (points.length > 1) {
+      LatLng end_point = points[points.length -1];
       details['end'] =
-          '${points[1].latitude.toStringAsFixed(6)}, ${points[1].longitude.toStringAsFixed(6)}';
+          '${end_point.latitude.toStringAsFixed(6)}, ${end_point.longitude.toStringAsFixed(6)}';
 
       if (provider.showIndianGrid) {
         final endGridCoords = IndianGridConverter.latLongToGrid(
           provider.selectedZone,
-          points[1].latitude,
-          points[1].longitude,
+          end_point.latitude,
+          end_point.longitude,
         );
 
         if (endGridCoords != null) {
@@ -124,10 +125,10 @@ class LineShape extends Shape {
       }
 
       details['distance'] =
-          '${calculateDistanceInMeters(points[0], points[1]).toStringAsFixed(2)} m (${calculateDistance().toStringAsFixed(2)} km)';
+          '${calculateDistanceInMeters(points[0], end_point).toStringAsFixed(2)} m (${calculateDistance().toStringAsFixed(2)} km)';
 
       // Calculate bearing
-      final bearing = const Distance().bearing(points[0], points[1]);
+      final bearing = const Distance().bearing(points[0], end_point);
       details['bearing'] = '${bearing.toStringAsFixed(2)}°';
     }
 
@@ -145,4 +146,6 @@ List<Polyline> getPolylines() {
     ),
   ];
 }
+ 
+
 }

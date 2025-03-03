@@ -153,9 +153,10 @@ class ProductCard2 extends StatelessWidget {
               maxLines: 2,
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.end ,
               children: [
-                InkWell(
+                InkWell(  
                   borderRadius: BorderRadius.circular(50),
                   onTap: () {},
                   child: Container(
@@ -169,7 +170,7 @@ class ProductCard2 extends StatelessWidget {
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      Icons.access_time,
+                      Icons.date_range,
                       color: Colors.grey[400],
                       size: isTablet ? 16 : 16.sp,
                     ),

@@ -30,8 +30,7 @@ class DownloadedMap {
 
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-
+    'id': id,
     'name': name,
     'northEast': {'lat': northEast.latitude, 'lng': northEast.longitude},
     'southWest': {'lat': southWest.latitude, 'lng': southWest.longitude},
