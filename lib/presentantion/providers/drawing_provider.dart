@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:myapp/core/enum/fishbone_type.dart';
@@ -8,7 +10,10 @@ import 'package:myapp/domain/entities/line_shape.dart';
 import 'package:myapp/domain/entities/marker_point.dart';
 import 'package:myapp/domain/entities/shape.dart';
 import 'package:myapp/domain/entities/square_shape.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 // Replace the simple shape lists with a state class
+ 
+
 class DrawingState {
   final List<Shape> shapes;
   final List<LatLng> markers;
@@ -18,10 +23,23 @@ class DrawingState {
     required this.markers,
   });
 
-  DrawingState.copy(DrawingState state)
-      : shapes = List.from(state.shapes),
-        markers = List.from(state.markers);
+  // Convert to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'shapes': shapes.map((shape) => shape.toJson()).toList(),
+      'markers': markers.map((marker) => {'lat': marker.latitude, 'lng': marker.longitude}).toList(),
+    };
+  }
+
+  // Create from JSON
+  factory DrawingState.fromJson(Map<String, dynamic> json) {
+    return DrawingState(
+      shapes: (json['shapes'] as List).map((shape) => Shape.fromJson(shape)).toList(),
+      markers: (json['markers'] as List).map((m) => LatLng(m['lat'], m['lng'])).toList(),
+    );
+  }
 }
+
 
 
 class DrawingProvider with ChangeNotifier {
@@ -31,8 +49,6 @@ class DrawingProvider with ChangeNotifier {
   LatLng? _currentCursor;
   FishboneType _currentFishboneType = FishboneType.strip_anti_personal;
 
-  // for edit and delete
-  // Shape? selectedShape;
   bool isSelectionMode = false;
   bool isEditMode = false;
   int? selectedPointIndex;
@@ -68,13 +84,6 @@ void toggleMarkerMode() {
     }
     notifyListeners();
   }
-  //  void addMarker(LatLng position) {
-  //   _markers.add(position);
-    
-  //   _isAddingMarker = false;
-  //   _currentShape= ShapeType.none;
-  //   notifyListeners();
-  // }
   void addMarker(LatLng position) {
   // Save current state before making changes
   _undoStack.add(DrawingState(
@@ -91,10 +100,6 @@ void toggleMarkerMode() {
     void updateMarkerPosition(int index, LatLng newPosition) {
     if (index < 0 || index >= _markers.length) return;
     
-    // _markers[index] = MarkerPoint(
-    //   position: newPosition,
-    //   name: _markers[index].name,
-    // );
     notifyListeners();
   }
 
@@ -107,16 +112,6 @@ void toggleMarkerMode() {
   // --------------------------------------------
 
 
-
-  
-
-
-
-
-  // Undo/Redo stacks
-  // final List<List<Shape>> _undoStack = [];
-  // final List<List<Shape>> _redoStack = [];
-  // Update the stacks in DrawingProvider
 final List<DrawingState> _undoStack = [];
 final List<DrawingState> _redoStack = [];
 
@@ -144,11 +139,6 @@ void _saveCurrentState() {
   }
 
 
-  // void setCurrentShape(ShapeType type) {
-  //   _currentShape = type;
-  //   _currentPoints = [];
-  //   notifyListeners();
-  // }
   void setCurrentShape(ShapeType type) {
     if (_isEditing) {
       _isEditing = false;
@@ -176,10 +166,7 @@ void _saveCurrentState() {
           break;
         case ShapeType.circle:
           newShape = CircleShape(points: List.from(_currentPoints));
-          break;
-        // case ShapeType.marker:  // Add this case
-        //   newShape = MarkerPoint();
-        //   break;
+          break; 
         case ShapeType.fishbone:
           newShape = FishboneShape(
             points: List.from(_currentPoints),
@@ -190,15 +177,7 @@ void _saveCurrentState() {
           break;
       }
 
-      // if (newShape != null) {
-      //   // Save current state to undo stack before adding new shape
-      //   _undoStack.add(List.from(_shapes));
-      //   _redoStack.clear(); // Clear redo stack when new action is performed
-
-      //   _shapes.add(newShape);
-      //   _currentPoints = [];
-      //   _currentShape = ShapeType.none;
-      // }
+      
           if (newShape != null) {
       // Save current state to undo stack before adding new shape
       _undoStack.add(DrawingState(
@@ -210,6 +189,9 @@ void _saveCurrentState() {
       _shapes.add(newShape);
       _currentPoints = [];
       _currentShape = ShapeType.none;
+
+      updateCurrentState();
+
     }
 
     }
@@ -217,21 +199,7 @@ void _saveCurrentState() {
     notifyListeners();
   }
 
-  // void undo() {
-  //   if (!canUndo) return;
 
-  //   _redoStack.add(List.from(_shapes));
-  //   _shapes = List.from(_undoStack.removeLast());
-  //   notifyListeners();
-  // }
-
-  // void redo() {
-  //   if (!canRedo) return;
-
-  //   _undoStack.add(List.from(_shapes));
-  //   _shapes = List.from(_redoStack.removeLast());
-  //   notifyListeners();
-  // }
   void undo() {
   if (_undoStack.isEmpty) return;
 
@@ -318,10 +286,6 @@ void redo() {
     notifyListeners();
   }
 
-  // void selectShape(Shape? shape) {
-  //   selectedShape = shape;
-  //   notifyListeners();
-  // }
    void selectShape(Shape? shape) {
     _selectedShape = shape;
     _isEditing = true;
@@ -330,14 +294,7 @@ void redo() {
   }
 
 
-  // void deleteSelectedShape() {
-  //   if (selectedShape != null) {
-  //     _shapes.remove(selectedShape);
-  //     selectedShape = null;
-  //     notifyListeners();
-  //   }
-  // }
-  // --------------------------------
+  
   void cancelEdit() {
     _selectedShape = null;
     _isEditing = false;
@@ -345,7 +302,6 @@ void redo() {
   }
 
   void updateShapePoints(List<LatLng> newPoints) {
-    print('#############      Updated shape detail ====> ${newPoints}');
     if (_selectedShape != null) {
       int index = _shapes.indexOf(_selectedShape!);
       if (index != -1) {
@@ -390,4 +346,118 @@ void redo() {
   _markers.add(position);
   notifyListeners();
 }
+
+// =================  state =============
+
+  List<DrawingState> _savedStates = [];
+  List<String> _pageNames = []; // Store names for each page
+  int _currentStateIndex = -1;
+
+  List<DrawingState> get savedStates => _savedStates;
+  List<String> get pageNames => _pageNames; // Getter for page names
+  int get currentStateIndex => _currentStateIndex;
+
+  void saveCurrentState() {
+    _savedStates.add(DrawingState(
+      shapes: List.from(_shapes),
+      markers: List.from(_markers),
+    ));
+    _pageNames.add("Page ${_savedStates.length}"); // Default name
+    _currentStateIndex = _savedStates.length - 1;
+      saveData(); // Save changes
+
+    notifyListeners();
+  }
+
+  void renamePage(int index, String newName) {
+    if (index >= 0 && index < _pageNames.length) {
+      _pageNames[index] = newName;
+      notifyListeners();
+    }
+  }
+
+  void deleteState(int index) {
+    if (index < 0 || index >= _savedStates.length) return;
+
+    _savedStates.removeAt(index);
+    _pageNames.removeAt(index);
+
+    if (_currentStateIndex == index) {
+      _currentStateIndex = -1;
+      _shapes.clear();
+      _markers.clear();
+    } else if (_currentStateIndex > index) {
+      _currentStateIndex--;
+    }
+
+    notifyListeners();
+  }
+
+  void createNewState() {
+    _shapes.clear();
+    _markers.clear();
+    _currentStateIndex = -1;
+    saveCurrentState();
+    notifyListeners();
+  }
+      void switchToState(int index) {
+    if (index < 0 || index >= _savedStates.length) return;
+    _currentStateIndex = index;
+    _shapes = List.from(_savedStates[index].shapes);
+    _markers = List.from(_savedStates[index].markers);
+    notifyListeners();
+  }
+    void updateCurrentState() {
+  if (_currentStateIndex != -1) {
+    _savedStates[_currentStateIndex] = DrawingState(
+      shapes: List.from(_shapes),
+      markers: List.from(_markers),
+    );
+    notifyListeners();
+  }
+}
+
+Future<void> saveData() async {
+  print("########## saving ");
+
+  final prefs = await SharedPreferences.getInstance();
+  
+  // Convert saved states to JSON
+  List<String> savedStatesJson = _savedStates.map((state) => jsonEncode(state.toJson())).toList();
+  List<String> pageNamesJson = List.from(_pageNames);
+
+  await prefs.setStringList('savedStates', savedStatesJson);
+  await prefs.setStringList('pageNames', pageNamesJson);
+  await prefs.setInt('currentStateIndex', _currentStateIndex);
+}
+
+Future<void> loadData() async {
+  print("########## loding ");
+  final prefs = await SharedPreferences.getInstance();
+
+  List<String>? savedStatesJson = prefs.getStringList('savedStates');
+  List<String>? pageNamesJson = prefs.getStringList('pageNames');
+  int? savedIndex = prefs.getInt('currentStateIndex');
+  print("## ${savedStatesJson}");
+  print("## ${pageNamesJson}");
+  print("## ${savedIndex}");
+
+  if (savedStatesJson != null && pageNamesJson != null) {
+    _savedStates = savedStatesJson.map((json) => DrawingState.fromJson(jsonDecode(json))).toList();
+  print("-- ${_savedStates}");
+
+    _pageNames = List.from(pageNamesJson);
+  print("-- ${_pageNames}");
+
+    _currentStateIndex = savedIndex ?? -1;
+  print("-- ${_currentStateIndex}");
+
+    notifyListeners();
+  }
+}
+
+
+
+
+
 }

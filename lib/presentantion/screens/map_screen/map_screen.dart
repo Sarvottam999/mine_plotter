@@ -8,6 +8,7 @@ import 'package:myapp/presentantion/providers/dowanload_provider.dart';
 import 'package:myapp/presentantion/providers/drawing_provider.dart';
 import 'package:myapp/presentantion/screens/SettingScreen/setting_screen.dart';
 import 'package:myapp/presentantion/screens/map_screen/utils.dart';
+import 'package:myapp/presentantion/widgets/bookmark_page.dart';
 import 'package:myapp/presentantion/widgets/compass_button.dart';
 import 'package:myapp/presentantion/widgets/coordinate_search_bar.dart';
 import 'package:myapp/presentantion/widgets/current_location_marke.dart';
@@ -77,6 +78,7 @@ class _MapScreenState extends State<MapScreen> {
                   }); // Update zoom level in provider
                 },
                 onTap: (_, point) {
+                  print(point);
                   final provider =
                       Provider.of<DrawingProvider>(context, listen: false);
                   if (provider.currentShape == ShapeType.point) {
@@ -84,12 +86,7 @@ class _MapScreenState extends State<MapScreen> {
                   } else if (provider.currentShape != ShapeType.none) {
                     provider.addPoint(point);
                   } else {
-                    Positioned(
-                      bottom: 1,
-                      right: 0,
-                      left: 0,
-                      child: Text(""),
-                    );
+                  
                   }
                 },
                 onPointerHover: (event, point) {
@@ -100,22 +97,23 @@ class _MapScreenState extends State<MapScreen> {
                 },
               ),
               children: [
-                Consumer<MapProvider>(
-                    builder: (context, provider, _) => TileLayer(
-                          urlTemplate:
-                              provider.currentTilePath ?? currentMapLayer.url,
-                          tileProvider: provider.currentTilePath != null
-                              ? SafeFileTileProvider()
-                              : NetworkTileProvider(),
-                          subdomains: provider.currentTilePath != null
-                              ? []
-                              : currentMapLayer.subdomains ?? [],
-                          errorImage:
-                              const AssetImage('assets/placeholder_tile.png'),
-                        )),
+                // Consumer<MapProvider>(
+                //     builder: (context, provider, _) => TileLayer(
+                //           urlTemplate:
+                //               provider.currentTilePath ?? currentMapLayer.url,
+                //           tileProvider: provider.currentTilePath != null
+                //               ? SafeFileTileProvider()
+                //               : NetworkTileProvider(),
+                //           subdomains: provider.currentTilePath != null
+                //               ? []
+                //               : currentMapLayer.subdomains ?? [],
+                //           errorImage:
+                //               const AssetImage('assets/placeholder_tile.png'),
+                //         )),
 
                 Consumer<DrawingProvider>(
                   builder: (context, provider, _) {
+                    print('#######   shapes ==========> ${provider.shapes}');
                     return PolylineLayer(
                       polylines: [
                         ...provider.shapes.expand((shape) {
@@ -125,10 +123,13 @@ class _MapScreenState extends State<MapScreen> {
                                 .map((polyline) => Polyline(
                                       points: polyline.points,
                                       strokeWidth: polyline.strokeWidth + 2,
-                                      color: Colors.yellow,
+                                      color: const Color.fromARGB(255, 16, 15, 7),
                                     ))
                                 .toList();
                           }
+
+                          print(polylines);
+
                           return polylines;
                         }),
                         if (provider.currentPoints.isNotEmpty &&
@@ -158,46 +159,18 @@ class _MapScreenState extends State<MapScreen> {
                       pointIconSize: const Size(30, 30),
                       callbackRefresh: (point) {}
 
-                      // setState(() {
-                      //   // selectedPoints = selectedPoints;
-                      // }),
+                 
 
                       );
                   return DragMarkers(markers: _polyEditor.edit());
                 }),
-
-                //             DraggableCoordinateMarker(
-                //   mapController: _mapController,
-                // ),
+ 
                 DraggableCoordinateMarker(),
 
-//  DragMarkers(
-//                 alignment: Alignment.topCenter,
-
-//                       markers: [
-//                           DragMarker(
-//         // key: GlobalKey<DragMarkerWidgetState>(),
-//         point: const LatLng(45.535, -122.675),
-//         size: const Size.square(50),
-//         offset: const Offset(0, -20),
-//         builder: (_, __, ___) => const Icon(
-//           Icons.location_on,
-//           size: 50,
-//           color: Color.fromRGBO(96, 125, 139, 1),
-//         ),
-//       ),
-
-//                       ],
-//                     ),
+ 
               ]),
 
-          //    Positioned(
-          // top: MediaQuery.of(context).size.height*0.2,
-          // left: 0,
-          // right: 0,
-          // child: Center(
-          //   child:  ShowEditInfo())),
-
+          // ======================  
           Positioned(
             top: MediaQuery.of(context).padding.top + 10,
             left: 0,
@@ -219,15 +192,17 @@ class _MapScreenState extends State<MapScreen> {
             ),
           ),
 
-          // -------------------  right bottom button --------------
+          // -------------------  coordinate pointer search  --------------
 
           Positioned(
             bottom: screenSize.height * 0.3,
             right: 10,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
-              spacing: 6,
+              spacing: 12,
               children: [
+                 // NIconButton(icon: Icon(Icons.bookmark_outline), onPressed: (){}),
+
                 SelectionButton(
                   mapController: _mapController,
                 ),
@@ -242,6 +217,9 @@ class _MapScreenState extends State<MapScreen> {
                     },
                   ),
                 ),
+
+
+
                 // **************   new  *****************
                 Center(
                   child: Container(
@@ -393,6 +371,12 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ),
           ),
+
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 20,
+            left: 10,
+            
+            child:BookmarkePanel() )
         ],
       ),
     );

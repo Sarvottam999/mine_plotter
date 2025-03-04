@@ -138,13 +138,10 @@ class LineShape extends Shape {
 
   @override
 List<Polyline> getPolylines() {
-  return [
-    Polyline(
-      points: points, // or points for line, getSquarePoints() for square, etc.
-      strokeWidth: 2.0,
-      // color: Colors.blue,
-    ),
-  ];
+    return [
+      Polyline(points: points, strokeWidth: 2.0, color: Colors.blue),
+    ];
+  
 }
  
 
