@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
@@ -10,6 +11,7 @@ import 'package:myapp/domain/entities/line_shape.dart';
 import 'package:myapp/domain/entities/marker_point.dart';
 import 'package:myapp/domain/entities/shape.dart';
 import 'package:myapp/domain/entities/square_shape.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // Replace the simple shape lists with a state class
  
@@ -32,12 +34,19 @@ class DrawingState {
   }
 
   // Create from JSON
+  // factory DrawingState.fromJson(Map<String, dynamic> json) {
+  //   return DrawingState(
+  //     shapes: (json['shapes'] as List).map((shape) => Shape.fromJson(shape)).toList(),
+  //     markers: (json['markers'] as List).map((m) => LatLng(m['lat'], m['lng'])).toList(),
+  //   );
+  // }
   factory DrawingState.fromJson(Map<String, dynamic> json) {
-    return DrawingState(
-      shapes: (json['shapes'] as List).map((shape) => Shape.fromJson(shape)).toList(),
-      markers: (json['markers'] as List).map((m) => LatLng(m['lat'], m['lng'])).toList(),
-    );
-  }
+  return DrawingState(
+    shapes: (json['shapes'] as List?)?.map((shape) => Shape.fromJson(shape)).toList() ?? [],
+    markers: (json['markers'] as List?)?.map((m) => LatLng(m['lat'], m['lng'])).toList() ?? [],
+  );
+}
+
 }
 
 
@@ -95,6 +104,9 @@ void toggleMarkerMode() {
   _markers.add(position);
   _isAddingMarker = false;
   _currentShape = ShapeType.none;
+      updateCurrentState();
+
+
   notifyListeners();
 }
     void updateMarkerPosition(int index, LatLng newPosition) {
@@ -115,13 +127,13 @@ void toggleMarkerMode() {
 final List<DrawingState> _undoStack = [];
 final List<DrawingState> _redoStack = [];
 
-void _saveCurrentState() {
-  _undoStack.add(DrawingState(
-    shapes: List.from(_shapes),
-    markers: List.from(_markers),
-  ));
-  _redoStack.clear();
-}
+// void _saveCurrentState() {
+//   _undoStack.add(DrawingState(
+//     shapes: List.from(_shapes),
+//     markers: List.from(_markers),
+//   ));
+//   _redoStack.clear();
+// }
 
 
   ShapeType get currentShape => _currentShape;
@@ -187,6 +199,7 @@ void _saveCurrentState() {
       _redoStack.clear();
 
       _shapes.add(newShape);
+      
       _currentPoints = [];
       _currentShape = ShapeType.none;
 
@@ -342,7 +355,6 @@ void redo() {
 
   // -------------- for search functionality -------------
   void addSearchMarker(LatLng position) {
-  _saveCurrentState();  // For undo/redo
   _markers.add(position);
   notifyListeners();
 }
@@ -372,6 +384,9 @@ void redo() {
   void renamePage(int index, String newName) {
     if (index >= 0 && index < _pageNames.length) {
       _pageNames[index] = newName;
+      saveData(); // Save changes
+
+      
       notifyListeners();
     }
   }
@@ -413,51 +428,144 @@ void redo() {
       shapes: List.from(_shapes),
       markers: List.from(_markers),
     );
+      saveData(); // Save changes
+
     notifyListeners();
   }
 }
+ 
 
 Future<void> saveData() async {
   print("########## saving ");
 
-  final prefs = await SharedPreferences.getInstance();
-  
-  // Convert saved states to JSON
-  List<String> savedStatesJson = _savedStates.map((state) => jsonEncode(state.toJson())).toList();
-  List<String> pageNamesJson = List.from(_pageNames);
+  try {
+    final file = await _getLocalFile();
+    
+    // Convert the saved states and page names to a JSON string
+    Map<String, dynamic> data = {
+      'savedStates': _savedStates.map((state) => state.toJson()).toList(),
+      'pageNames': _pageNames,
+      'currentStateIndex': _currentStateIndex
+    };
 
-  await prefs.setStringList('savedStates', savedStatesJson);
-  await prefs.setStringList('pageNames', pageNamesJson);
-  await prefs.setInt('currentStateIndex', _currentStateIndex);
-}
+    String jsonString = jsonEncode(data);
+    
+    // Write to the file
+    await file.writeAsString(jsonString);
 
-Future<void> loadData() async {
-  print("########## loding ");
-  final prefs = await SharedPreferences.getInstance();
-
-  List<String>? savedStatesJson = prefs.getStringList('savedStates');
-  List<String>? pageNamesJson = prefs.getStringList('pageNames');
-  int? savedIndex = prefs.getInt('currentStateIndex');
-  print("## ${savedStatesJson}");
-  print("## ${pageNamesJson}");
-  print("## ${savedIndex}");
-
-  if (savedStatesJson != null && pageNamesJson != null) {
-    _savedStates = savedStatesJson.map((json) => DrawingState.fromJson(jsonDecode(json))).toList();
-  print("-- ${_savedStates}");
-
-    _pageNames = List.from(pageNamesJson);
-  print("-- ${_pageNames}");
-
-    _currentStateIndex = savedIndex ?? -1;
-  print("-- ${_currentStateIndex}");
-
-    notifyListeners();
+    print("########## Saved successfully!");
+  } catch (e) {
+    print("Error saving data: $e");
   }
 }
 
 
+// Future<void> loadData() async {
+//   print("########## loding ");
+//   final prefs = await SharedPreferences.getInstance();
+
+//   List<String>? savedStatesJson = prefs.getStringList('savedStates');
+//   List<String>? pageNamesJson = prefs.getStringList('pageNames');
+//   int? savedIndex = prefs.getInt('currentStateIndex');
+//   print("## ${savedStatesJson}");
+//   print("## ${pageNamesJson}");
+//   print("## ${savedIndex}");
+
+//   if (savedStatesJson != null && pageNamesJson != null) {
+//     _savedStates = savedStatesJson.map((json) => DrawingState.fromJson(jsonDecode(json))).toList();
+//   print("-- 1${_savedStates}");
+
+//     _pageNames = List.from(pageNamesJson);
+//   print("-- 1${_pageNames}");
+
+//     _currentStateIndex = savedIndex ?? -1;
+//   print("-- 1${_currentStateIndex}");
+
+
+//       if (_currentStateIndex >= 0 && _currentStateIndex < _savedStates.length) {
+//     print("== ${_savedStates} ${_savedStates[_currentStateIndex]}, ${_savedStates[_currentStateIndex].shapes}");
+
+//       _shapes = List.from(_savedStates[_currentStateIndex].shapes);
+//   print("-- 2${_shapes} - ${_savedStates[_currentStateIndex].shapes}");
+
+//       _markers = List.from(_savedStates[_currentStateIndex].markers);
+//   print("-- 3${_markers} - ${_savedStates[_currentStateIndex].shapes}");
+
+//     } else {
+//       _shapes = [];
+//       _markers = [];
+//     }
+
+
+ 
+
+//     notifyListeners();
+//   }
+// }
+
+Future<void> loadData() async {
+  print("########## loading ");
+
+  try {
+    final file = await _getLocalFile();
+    print("1 -- file -- ${file}");
+
+    if (!await file.exists()) {
+      print("No saved file found.");
+      return;
+    }
+
+    // Read file as string
+    String jsonString = await file.readAsString();
+
+    // Decode JSON
+    Map<String, dynamic> data = jsonDecode(jsonString);
+
+    print("1 -- data -- ${data}");
+
+
+    // Convert JSON back into Dart objects
+    _savedStates = (data['savedStates'] as List)
+        .map((json) => DrawingState.fromJson(json))
+        .toList();
+    print("1 -- _savedStates -- ${_savedStates}");
+
+
+    _pageNames = List<String>.from(data['pageNames']);
+    _currentStateIndex = data['currentStateIndex'] ?? -1;
+    print("1 -- _currentStateIndex -- ${_currentStateIndex}");
+          if (_currentStateIndex >= 0 && _currentStateIndex < _savedStates.length) {
+    print("== ${_savedStates} ${_savedStates[_currentStateIndex]}, ${_savedStates[_currentStateIndex].shapes}");
+
+      _shapes = List.from(_savedStates[_currentStateIndex].shapes);
+  print("-- 2${_shapes} - ${_savedStates[_currentStateIndex].shapes}");
+
+      _markers = List.from(_savedStates[_currentStateIndex].markers);
+  print("-- 3${_markers} - ${_savedStates[_currentStateIndex].shapes}");
+
+    } else {
+      _shapes = [];
+      _markers = [];
+    }
 
 
 
+    print("########## Loaded successfully!");
+    notifyListeners();
+  } catch (e) {
+    print("Error loading data: $e");
+  }
+}
+
+
+ 
+
+
+
+}
+
+
+Future<File> _getLocalFile() async {
+  final directory = await getApplicationDocumentsDirectory();
+  return File('${directory.path}/drawing_states.json');
 }

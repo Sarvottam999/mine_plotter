@@ -113,3 +113,25 @@ Future<File> getPreviewImage(String mapName) async {
   double truncateToFourDecimalPlaces(double largeNumber) {
   return (largeNumber * 10000).truncateToDouble() / 10000;
 }
+
+
+ 
+LatLng calculateEndPointFromBearing(LatLng start, double bearing, double distanceInMeters) {
+  const double earthRadius = 6371000; // Earth's radius in meters
+
+  double lat1 = start.latitude * pi / 180; // Convert to radians
+  double lon1 = start.longitude * pi / 180;
+  double bearingRad = bearing * pi / 180; // Convert bearing to radians
+
+  double angularDistance = distanceInMeters / earthRadius;
+
+  double lat2 = asin(sin(lat1) * cos(angularDistance) +
+      cos(lat1) * sin(angularDistance) * cos(bearingRad));
+
+  double lon2 = lon1 +
+      atan2(sin(bearingRad) * sin(angularDistance) * cos(lat1),
+          cos(angularDistance) - sin(lat1) * sin(lat2));
+
+  // Convert back to degrees
+  return LatLng(lat2 * 180 / pi, lon2 * 180 / pi);
+}

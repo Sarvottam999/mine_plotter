@@ -39,9 +39,15 @@ class _MapScreenState extends State<MapScreen> {
 
   double zoom_level = 0;
 
+  Future<void> _initializeApp() async {
+  await Provider.of<DrawingProvider>(context, listen: false).loadData();
+}
+
   @override
   void initState() {
     super.initState();
+  _initializeApp();
+
     _polyEditor = PolyEditor(
         points: context.read<DrawingProvider>().markers,
         pointIcon: const Icon(Icons.adjust, color: Colors.red),
@@ -96,24 +102,10 @@ class _MapScreenState extends State<MapScreen> {
                   }
                 },
               ),
-              children: [
-                // Consumer<MapProvider>(
-                //     builder: (context, provider, _) => TileLayer(
-                //           urlTemplate:
-                //               provider.currentTilePath ?? currentMapLayer.url,
-                //           tileProvider: provider.currentTilePath != null
-                //               ? SafeFileTileProvider()
-                //               : NetworkTileProvider(),
-                //           subdomains: provider.currentTilePath != null
-                //               ? []
-                //               : currentMapLayer.subdomains ?? [],
-                //           errorImage:
-                //               const AssetImage('assets/placeholder_tile.png'),
-                //         )),
+              children: [ 
 
                 Consumer<DrawingProvider>(
                   builder: (context, provider, _) {
-                    print('#######   shapes ==========> ${provider.shapes}');
                     return PolylineLayer(
                       polylines: [
                         ...provider.shapes.expand((shape) {
@@ -127,9 +119,6 @@ class _MapScreenState extends State<MapScreen> {
                                     ))
                                 .toList();
                           }
-
-                          print(polylines);
-
                           return polylines;
                         }),
                         if (provider.currentPoints.isNotEmpty &&
@@ -158,16 +147,10 @@ class _MapScreenState extends State<MapScreen> {
                       pointIcon: const Icon(Icons.adjust, color: Colors.red),
                       pointIconSize: const Size(30, 30),
                       callbackRefresh: (point) {}
-
-                 
-
                       );
                   return DragMarkers(markers: _polyEditor.edit());
                 }),
- 
                 DraggableCoordinateMarker(),
-
- 
               ]),
 
           // ======================  
@@ -335,48 +318,58 @@ class _MapScreenState extends State<MapScreen> {
                     });
                   })),
 
-          // ====================  undo/redo button ==============
-          Positioned(bottom: 10, left: 10, child: undoButtons()),
+           Positioned(
+              bottom: 10,
+              left: 10,
+            child: Row(
+              spacing: 5,
+              crossAxisAlignment: CrossAxisAlignment.end,
 
-          // ?============== zoom level ==================
-          Positioned(
-            bottom: 10,
-            // right: 0,
-            left: 120,
-            child: Container(
-              padding: const EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 4.0,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Row(
-                spacing: 5,
-                children: [
-                  Icon(
-                    Icons.open_in_full,
-                    size: 18,
-                  ),
-                  Text(
-                    'Zoom: ${zoom_level.toStringAsFixed(1)}',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
+              children: [
+            
+                // ====================== book marke =================
+            BookmarkePanel(),
+          // ====================  undo/redo button ==============
+            undoButtons(),
+
+              // ?============== zoom level ==================
+          Container(
+            padding: const EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 4.0,
+                  offset: Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              spacing: 5,
+              children: [
+                Icon(
+                  Icons.open_in_full,
+                  size: 18,
+                ),
+                Text(
+                  'Zoom: ${zoom_level.toStringAsFixed(1)}',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
             ),
           ),
 
-          Positioned(
-            top: MediaQuery.of(context).padding.top + 20,
-            left: 10,
+              ],
+            ),
+
             
-            child:BookmarkePanel() )
+          ),
+          
+
+        
+
         ],
       ),
     );

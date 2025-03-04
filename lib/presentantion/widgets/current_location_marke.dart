@@ -6,6 +6,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:myapp/molecules/Buttons/icon_button.dart';
+import 'package:myapp/molecules/snakbar.dart';
 
 class CurrentLocationLayer extends StatefulWidget {
   final MapController mapController;
@@ -59,9 +60,14 @@ class _CurrentLocationLayerState extends State<CurrentLocationLayer> {
       widget.onLocationMarked(_currentLocation!);
 
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error getting location: $e')),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(content: Text('Error getting location: $e')),
+      // );
+       CustomSnackbar.show(
+  context,
+  message: "Location access denied. Please allow location permissions to proceed.",
+  type: SnackbarType.error,
+);
     } finally {
       setState(() => _isLoading = false);
     }

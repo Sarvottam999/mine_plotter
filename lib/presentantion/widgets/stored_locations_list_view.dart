@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:myapp/database/location_database.dart';
+import 'package:myapp/molecules/custom_dialog.dart';
 import 'package:myapp/presentantion/providers/drawing_provider.dart';
 import 'package:myapp/presentantion/screens/SettingScreen/models/stored_location.dart';
 import 'package:myapp/presentantion/widgets/search_bar/stored_location/location_add_form.dart';
@@ -404,32 +405,21 @@ class LocationListItem extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          title: Text("Delete Location?"),
-          content: Text("Are you sure you want to delete this location?"),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text("Cancel", style: TextStyle(
-                color: Colors.grey
-              ),),
-            ),
-            TextButton(
-              onPressed: () async {
+        return CustomDialog(
+        title: "Delete Location?",
+        message: "Are you sure you want to delete this location?",
+        onConfirm: () async {
                 if (location.id != null) {
                   await LocationDatabase.instance.deleteLocation(location.id!);
                   onDelete();
                 }
                 Navigator.of(dialogContext).pop();
               },
-              child: Text(
-                "Delete",
-                style: TextStyle(color: my_orange),
-              ),
-            ),
-          ],
-        );
+        onCancel: () => Navigator.of(dialogContext).pop(),
+        iconColor: my_orange,  
+      );
+        
+   
       },
     );
   }

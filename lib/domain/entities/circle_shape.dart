@@ -103,19 +103,4 @@ List<Polyline> getPolylines() {
 }
 
 
-// now we hav onlly one type of FishboneShape,
-// but now i want to create a diffrent type of FishboneShape like:
-// 1.) anti-presonal-FishboneShape: these type of fish bone is design as 
-    // - its start and ending point of the vertical line id befor 3 meters
-    // - it verticle line  hight of one side is 2 meters and other half verticle line that is other side is of 2 meters.
-    // - the distance between the two verticle lines is 1 meters
-
-// 2.) anti-tank-FishboneShape: these type of fish bone is design as 
-    // - its start and ending point of the vertical line id befor 6 meters
-    // - it verticle line  hight of one side is 4 meters and other half verticle line that is other side is of 4 meters.
-    // - the distance between the two verticle lines is 3 meters
-
-// 3.) Fragmentation-FishboneShape: these type of fish bone is design as 
-    // - its start and ending point of the vertical line id befor 9 meters
-    // - it verticle line  hight of one side is 6 meters and other half verticle line that is other side is of 6 meters.
-    // - the distance between the two verticle lines is 12 meters
+ 

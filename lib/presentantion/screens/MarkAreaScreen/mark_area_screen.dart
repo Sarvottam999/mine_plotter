@@ -52,7 +52,6 @@ class _MapSelectorScreenState extends State<MapSelectorScreen> {
                   hintText: 'Enter a name for this map',
                   focusedBorder: OutlineInputBorder(
                     borderSide: const BorderSide(color: my_orange, width: 2.0),
-                    // borderRadius: BorderRadius.circular(25.0),
                   ),
                 )),
             SizedBox(height: 10),

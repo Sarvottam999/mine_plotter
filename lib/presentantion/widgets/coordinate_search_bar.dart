@@ -9,6 +9,7 @@ import 'package:myapp/presentantion/providers/drawing_provider.dart';
 import 'package:myapp/presentantion/providers/search_provider.dart';
 import 'package:myapp/presentantion/widgets/collapsed_search_view.dart';
 import 'package:myapp/presentantion/widgets/stored_locations_list_view.dart';
+import 'package:myapp/utils/contant.dart';
 import 'package:myapp/utils/indian_grid_converter.dart';
 import 'package:provider/provider.dart';
 import '../providers/coordinate_provider.dart';
@@ -177,6 +178,10 @@ class _CoordinateSearchState extends State<CoordinateSearch> {
                               decoration: InputDecoration(
                                 labelText: 'Latitude',
                                 border: OutlineInputBorder(),
+                                  labelStyle: TextStyle(color: Colors.black),
+              focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: my_orange, width: 2.0),
+                  ),
                               ),
                               keyboardType: TextInputType.numberWithOptions(
                                   decimal: true),
@@ -196,6 +201,10 @@ class _CoordinateSearchState extends State<CoordinateSearch> {
                               decoration: InputDecoration(
                                 labelText: 'Longitude',
                                 border: OutlineInputBorder(),
+                                  labelStyle: TextStyle(color: Colors.black),
+              focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: my_orange, width: 2.0),
+                  ),
                               ),
                               keyboardType: TextInputType.numberWithOptions(
                                   decimal: true),
@@ -247,6 +256,10 @@ class _CoordinateSearchState extends State<CoordinateSearch> {
                               decoration: InputDecoration(
                                 labelText: 'Easting (meters)',
                                 border: OutlineInputBorder(),
+                                  labelStyle: TextStyle(color: Colors.black),
+              focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: my_orange, width: 2.0),
+                  ),
                               ),
                               keyboardType: TextInputType.numberWithOptions(
                                   decimal: true),
@@ -262,6 +275,10 @@ class _CoordinateSearchState extends State<CoordinateSearch> {
                               decoration: InputDecoration(
                                 labelText: 'Northing (meters)',
                                 border: OutlineInputBorder(),
+                                  labelStyle: TextStyle(color: Colors.black),
+              focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: my_orange, width: 2.0),
+                  ),
                               ),
                               keyboardType: TextInputType.numberWithOptions(
                                   decimal: true),

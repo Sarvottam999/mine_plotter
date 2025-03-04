@@ -127,8 +127,7 @@ class FishboneShape extends Shape {
     return earthRadius * c;
   }
 
-  @override
-  @override
+   @override
 List<Polyline> getPolylines() {
   if (points.length < 2) {
     print("Not enough points to draw fishbone.");
@@ -216,140 +215,7 @@ List<Polyline> getPolylines() {
 
   return polylines;
 }
-
-  // List<Polyline> getPolylines() {
-  //   if (points.length != 2)
-  //   {
-
-  //     print("returning [] --------")
-  //     return [];
-      
-  //   } 
-
-  //   List<Polyline> polylines = [];
-  //   final startPoint = points[0];
-  //   final endPoint = points[1];
-
-  //   // Add main horizontal line
-  //   polylines.add(Polyline(
-  //     points: [startPoint, endPoint],
-  //     strokeWidth: config.mainLineWidth,
-  //     color: config.mainLineColor,
-  //   ));
-
-  //   // Calculate bearing between points
-  //   double startLat = startPoint.latitude * pi / 180;
-  //   double startLon = startPoint.longitude * pi / 180;
-  //   double endLat = endPoint.latitude * pi / 180;
-  //   double endLon = endPoint.longitude * pi / 180;
-    
-  //   double bearing = atan2(
-  //     sin(endLon - startLon) * cos(endLat),
-  //     cos(startLat) * sin(endLat) - sin(startLat) * cos(endLat) * cos(endLon - startLon)
-  //   );
-
-  //   double totalDistance = calculateDistance();
-    
-  //   // Validate the configuration
-  //   if (config.startFromMeters >= totalDistance || 
-  //       config.endBeforeMeters >= totalDistance ||
-  //       config.startFromMeters + config.endBeforeMeters >= totalDistance) {
-  //     return [Polyline(
-  //       points: [startPoint, endPoint],
-  //       strokeWidth: config.mainLineWidth,
-  //       color: config.mainLineColor,
-  //     )];
-  //   }
-
-  //   // Calculate available distance for vertical lines
-  //   double availableDistance = totalDistance - (config.startFromMeters + config.endBeforeMeters);
-    
-  //   // Calculate number of vertical lines that will fit
-  //   int numberOfLines = (availableDistance / config.lineSpacing).floor();
-    
-  //   // Generate vertical lines
-  //   for (int i = 0; i < numberOfLines; i++) {
-  //     // Calculate distance from start for this vertical line
-  //     double distanceFromStart = config.startFromMeters + (i * config.lineSpacing);
-      
-  //     // Make sure we don't exceed the end point
-  //     if (distanceFromStart >= (totalDistance - config.endBeforeMeters)) {
-  //       break;
-  //     }
-      
-  //     // Calculate position along the main line
-  //     double fraction = distanceFromStart / totalDistance;
-      
-  //     // Interpolate position
-  //     double lat = startPoint.latitude + (endPoint.latitude - startPoint.latitude) * fraction;
-  //     double lon = startPoint.longitude + (endPoint.longitude - startPoint.longitude) * fraction;
-      
-  //     // Calculate vertical line length
-  //     double verticalLatDelta = metersToDegreesLatitude(config.verticalLineLength);
-  //     double verticalLonDelta = metersToDegreesLongitude(config.verticalLineLength, lat);
-      
-  //     // Calculate perpendicular bearing
-  //     double perpBearing = bearing + (pi / 2);
-  //     LatLng mainLinePoint = LatLng(lat, lon);
-  //     LatLng verticalEnd;
-      
-
-
-  //     // ---------------------------------
-  //       // Alternate between up and down
-  //     if (i % 2 == 0) {
-  //       // Right side vertical (up)
-  //       if (!config.hideRightVerticals) {
-  //         verticalEnd = LatLng(
-  //           lat + verticalLatDelta * cos(perpBearing),
-  //           lon + verticalLonDelta * sin(perpBearing)
-  //         );
-          
-  //         polylines.add(Polyline(
-  //           points: [mainLinePoint, verticalEnd],
-  //           strokeWidth: config.verticalLineWidth,
-  //           color: config.verticalLineColor,
-  //         ));
-  //       }
-  //     } else {
-  //       // Left side vertical (down)
-  //       if (!config.hideLeftVerticals) {
-  //         verticalEnd = LatLng(
-  //           lat - verticalLatDelta * cos(perpBearing),
-  //           lon - verticalLonDelta * sin(perpBearing)
-  //         );
-          
-  //         polylines.add(Polyline(
-  //           points: [mainLinePoint, verticalEnd],
-  //           strokeWidth: config.verticalLineWidth,
-  //           color: config.verticalLineColor,
-  //         ));
-  //       }
-  //     }
-  //     // ---------------------------------
-  //     // Alternate between up and down
-  //     // if (i % 2 == 0) {
-  //     //   verticalEnd = LatLng(
-  //     //     lat + verticalLatDelta * cos(perpBearing),
-  //     //     lon + verticalLonDelta * sin(perpBearing)
-  //     //   );
-  //     // } else {
-  //     //   verticalEnd = LatLng(
-  //     //     lat - verticalLatDelta * cos(perpBearing),
-  //     //     lon - verticalLonDelta * sin(perpBearing)
-  //     //   );
-  //     // }
-
-  //     // Add vertical line
-  //     // polylines.add(Polyline(
-  //     //   points: [mainLinePoint, verticalEnd],
-  //     //   strokeWidth: config.verticalLineWidth,
-  //     //   color: config.verticalLineColor,
-  //     // ));
-  //   }
-
-  //   return polylines;
-  // }
+ 
 
   @override
   Map<String, dynamic> getDetails(BuildContext context) {

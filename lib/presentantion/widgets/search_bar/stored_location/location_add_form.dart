@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/molecules/Buttons/outline_filled_button.dart';
 import 'package:myapp/presentantion/screens/SettingScreen/models/stored_location.dart';
+import 'package:myapp/utils/contant.dart';
 import 'package:myapp/utils/indian_grid_converter.dart';
 
 class LocationAddForm extends StatefulWidget {
@@ -69,6 +70,10 @@ class _LocationAddFormState extends State<LocationAddForm> {
             decoration: InputDecoration(
               labelText: 'Location Name',
               border: OutlineInputBorder(),
+              labelStyle: TextStyle(color: Colors.black),
+              focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: my_orange, width: 2.0),
+                  ),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -79,6 +84,34 @@ class _LocationAddFormState extends State<LocationAddForm> {
           ),
           SizedBox(height: 16),
           SegmentedButton<bool>(
+              style: ButtonStyle(
+                              iconColor: WidgetStateProperty.resolveWith<Color>(
+                                (Set<WidgetState> states) {
+                                  if (states.contains(WidgetState.selected)) {
+                                    return Colors.white;
+                                  }
+                                  return my_orange;
+                                },
+                              ),
+                              backgroundColor:
+                                  WidgetStateProperty.resolveWith<Color>(
+                                (Set<WidgetState> states) {
+                                  if (states.contains(WidgetState.selected)) {
+                                    return my_orange;
+                                  }
+                                  return Colors.white;
+                                },
+                              ),
+                              foregroundColor:
+                                  WidgetStateProperty.resolveWith<Color>(
+                                (Set<WidgetState> states) {
+                                  if (states.contains(WidgetState.selected)) {
+                                    return Colors.white;
+                                  }
+                                  return my_orange;
+                                },
+                              ),
+                            ),
             segments: const [
               ButtonSegment(
                 value: true,
@@ -103,6 +136,10 @@ class _LocationAddFormState extends State<LocationAddForm> {
               decoration: InputDecoration(
                 labelText: 'Latitude',
                 border: OutlineInputBorder(),
+                    labelStyle: TextStyle(color: Colors.black),
+              focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: my_orange, width: 2.0),
+                  ),
               ),
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               validator: (value) {
@@ -120,6 +157,10 @@ class _LocationAddFormState extends State<LocationAddForm> {
               decoration: InputDecoration(
                 labelText: 'Longitude',
                 border: OutlineInputBorder(),
+                    labelStyle: TextStyle(color: Colors.black),
+              focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: my_orange, width: 2.0),
+                  ),
               ),
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               validator: (value) {
@@ -137,6 +178,11 @@ class _LocationAddFormState extends State<LocationAddForm> {
               decoration: InputDecoration(
                 labelText: 'Zone',
                 border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.black),
+              focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: my_orange, width: 2.0),
+                  ),
+
               ),
               items: IndianGridConverter.zoneNames.map((zone) {
                 return DropdownMenuItem(
